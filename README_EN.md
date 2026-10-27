@@ -17,20 +17,19 @@ A fully offline, local Xiangqi program: the **Pikafish** engine (NNUE) + a self-
 
 ## Quick Start (Windows)
 
+**Prerequisite**: install [Python 3.8+](https://www.python.org/downloads/) (make sure to check **Add python.exe to PATH**). No third-party packages needed.
+
+**Option 1 (recommended)**: download the zip from [Releases](../../releases), extract anywhere, double-click `开始下棋.bat`.
+
+**Option 2 (clone the source)**:
+
 ```bat
+git clone https://github.com/rallait/xiangqi-pikafish-web.git
+cd xiangqi-pikafish-web
 开始下棋.bat
 ```
 
-or manually:
-
-```bat
-cd gui-web
-python server.py
-```
-
-Then open <http://127.0.0.1:8731> in your browser. Requires Python 3.8+, no third-party packages needed.
-
-Or grab the ready-to-run zip from [Releases](../../releases) — unzip and double-click `开始下棋.bat`.
+Your browser should open <http://127.0.0.1:8731> automatically (open it manually if not). Close the console window to quit.
 
 ## Opening Book Format (reusable)
 

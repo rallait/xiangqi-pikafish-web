@@ -11,7 +11,7 @@ import threading
 import webbrowser
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-ENGINE_DIR = r"C:\chess-ai\engine"
+ENGINE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "engine")
 ENGINE_EXE = os.path.join(ENGINE_DIR, "Pikafish-Windows-x86-64-universal.exe")
 NNUE_FILE = os.path.join(ENGINE_DIR, "pikafish.nnue")
 

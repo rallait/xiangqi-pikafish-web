@@ -19,20 +19,19 @@
 
 ## 快速开始（Windows）
 
+**前提**：安装 [Python 3.8+](https://www.python.org/downloads/)（安装时务必勾选 **Add python.exe to PATH**）。无需安装任何第三方包。
+
+**方式一（推荐，免装 git）**：到 [Releases](../../releases) 下载 zip，解压到任意目录，双击 `开始下棋.bat`。
+
+**方式二（克隆源码）**：
+
 ```bat
+git clone https://github.com/rallait/xiangqi-pikafish-web.git
+cd xiangqi-pikafish-web
 开始下棋.bat
 ```
 
-或手动：
-
-```bat
-cd gui-web
-python server.py
-```
-
-然后浏览器打开 <http://127.0.0.1:8731>。需要 Python 3.8+，无需安装任何第三方包。
-
-不想自己装？到 [Releases](../../releases) 下载打包好的 zip，解压后双击 `开始下棋.bat` 即可。
+浏览器会自动打开 <http://127.0.0.1:8731>（如未自动打开请手动访问）。关闭黑色命令行窗口即退出程序。
 
 ## 职业开局库格式（可复用）
 

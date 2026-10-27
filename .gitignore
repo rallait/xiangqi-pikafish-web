@@ -9,3 +9,7 @@ gui-web/err.txt
 gui-web/out.txt
 gui-web/_s3.json
 gui-web/book_wxf.json
+
+# 内部工作日志（仅本地保留）
+install-log.md
+offline-test.md
