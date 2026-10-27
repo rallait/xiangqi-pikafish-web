@@ -1,9 +1,28 @@
+<div align="center">
+
 # Xiangqi (Chinese Chess) AI — Pikafish + Web GUI
 
-A fully offline, local Xiangqi program: the **Pikafish** engine (NNUE) + a self-contained **web interface** + a **51,101-node professional opening book**.
+**A fully offline, local Xiangqi program**<br>
+Top-tier engine · 51,101-node professional opening book · clickable candidate moves · cyber aesthetics
+
+[![Release](https://img.shields.io/github/v/release/rallait/xiangqi-pikafish-web?style=flat-square&color=00e5ff)](../../releases)
+[![Python](https://img.shields.io/badge/Python-3.8%2B-3776ab?style=flat-square&logo=python&logoColor=white)](https://www.python.org/downloads/)
+[![Platform](https://img.shields.io/badge/Platform-Windows-0078d4?style=flat-square&logo=windows&logoColor=white)](../../releases)
+[![License](https://img.shields.io/badge/License-MIT%20%2B%20GPL--3.0-green?style=flat-square)](#licenses)
+[![Stars](https://img.shields.io/github/stars/rallait/xiangqi-pikafish-web?style=flat-square&color=ffd24d)](../../stargazers)
+
+**[中文 README](README.md)** · [Ready-to-run zip](../../releases) · [Usage guide](usage.md)
+
+</div>
 
 ![Cyber neon theme](docs/screenshot-cyber.png)
+
+<details>
+<summary>More themes (classic wood)</summary>
+
 ![Classic wood theme](docs/screenshot-wood.png)
+
+</details>
 
 ## Features
 

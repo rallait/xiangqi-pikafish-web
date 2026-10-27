@@ -1,21 +1,40 @@
-# 中国象棋 AI（Pikafish + Web GUI）
+<div align="center">
 
-**[English README](README_EN.md)**
+# 中国象棋 AI · Pikafish + Web GUI
 
-本地离线运行的中国象棋对弈程序：Pikafish 引擎（NNUE）+ 自研 Web 界面 + 5.1 万节点职业开局库。
+**本地离线运行的中国象棋对弈程序**<br>
+顶级引擎 · 5.1 万节点职业开局库 · 可点击候选着法 · 赛博美学
+
+[![Release](https://img.shields.io/github/v/release/rallait/xiangqi-pikafish-web?style=flat-square&color=00e5ff)](../../releases)
+[![Python](https://img.shields.io/badge/Python-3.8%2B-3776ab?style=flat-square&logo=python&logoColor=white)](https://www.python.org/downloads/)
+[![Platform](https://img.shields.io/badge/Platform-Windows-0078d4?style=flat-square&logo=windows&logoColor=white)](../../releases)
+[![License](https://img.shields.io/badge/License-MIT%20%2B%20GPL--3.0-green?style=flat-square)](#许可)
+[![Stars](https://img.shields.io/github/stars/rallait/xiangqi-pikafish-web?style=flat-square&color=ffd24d)](../../stargazers)
+
+**[English README](README_EN.md)** · [下载即用版](../../releases) · [使用说明](usage.md)
+
+</div>
 
 ![赛博霓虹主题](docs/screenshot-cyber.png)
+
+<details>
+<summary>更多主题截图（经典木纹）</summary>
+
 ![经典木纹主题](docs/screenshot-wood.png)
+
+</details>
 
 ## 功能
 
-- **强引擎**：Pikafish 2026-09-06，8 线程 / 512MB 哈希，五档难度（默认高级 2s/步，随对局深入自动加时，越下越强）
-- **职业开局库**：由 Eleeye BOOK.DAT 翻译的 51,101 节点开局树，按职业比赛统计权重选着，零延迟
-- **AI 候选着法**：每步给出前 3 候选（中文记谱 + 我方视角分差 + 续着），**点击候选即可让 AI 改走该手**
-- **局势评估卡**：白话结论（我方略优 / 对方大优…）+ 红方视角形势条 + 中文主变
-- **规则完备**：长将/长捉违规判定、三次重复局面、六十回合和棋
-- **美术**：4 套主题随时切换（赛博霓虹/经典木纹/青瓷/水墨），落子滑行动画、吃子碎裂特效、将军/绝杀全屏横幅、走子路径箭头、战损陈列区、落子音效
-- **套路模式**：AI 按指定开局套路（中炮、飞相、仙人指路等）见招拆招
+| 类别 | 说明 |
+|------|------|
+| **强引擎** | Pikafish 2026-09-06，8 线程 / 512MB 哈希，五档难度（默认高级 2s/步，随对局深入自动加时，越下越强） |
+| **职业开局库** | 由 Eleeye BOOK.DAT 翻译的 51,101 节点开局树，按职业比赛统计权重选着，零延迟 |
+| **AI 候选着法** | 每步给出前 3 候选（中文记谱 + 我方视角分差 + 续着），**点击候选即可让 AI 改走该手** |
+| **局势评估卡** | 白话结论（我方略优 / 对方大优…）+ 红方视角形势条 + 中文主变 |
+| **规则完备** | 长将/长捉违规判定、三次重复局面、六十回合和棋 |
+| **美术** | 4 套主题随时切换（赛博霓虹/经典木纹/青瓷/水墨），落子滑行动画、吃子碎裂特效、将军/绝杀全屏横幅、走子路径箭头、战损陈列区、落子音效 |
+| **套路模式** | AI 按指定开局套路（中炮、飞相、仙人指路等）见招拆招 |
 
 ## 快速开始（Windows）
 
