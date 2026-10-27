@@ -1,6 +1,11 @@
 # 中国象棋 AI（Pikafish + Web GUI）
 
+**[English README](README_EN.md)**
+
 本地离线运行的中国象棋对弈程序：Pikafish 引擎（NNUE）+ 自研 Web 界面 + 5.1 万节点职业开局库。
+
+![赛博霓虹主题](docs/screenshot-cyber.png)
+![经典木纹主题](docs/screenshot-wood.png)
 
 ## 功能
 
@@ -27,6 +32,26 @@ python server.py
 
 然后浏览器打开 <http://127.0.0.1:8731>。需要 Python 3.8+，无需安装任何第三方包。
 
+不想自己装？到 [Releases](../../releases) 下载打包好的 zip，解压后双击 `开始下棋.bat` 即可。
+
+## 职业开局库格式（可复用）
+
+`gui-web/book_tree.json` 由 Eleeye 的 `BOOK.DAT` 转换而来（转换脚本 `build_book.py`），结构极简，任何象棋程序都可以直接复用：
+
+```json
+{
+  "":            {"c3c4": 546, "b2e2": 1473, "c0e2": 311, ...},
+  "c3c4":        {"h9g7": 50, "b7c7": 149, "g6g5": 57, ...},
+  "c3c4 h9g7":   {"g3g4": 34, "b0c2": 38, ...}
+}
+```
+
+- **key**：从开局到当前局面的着法序列，UCI 坐标着法（如 `h2e2` = 炮二平五），空格分隔；空串 `""` 是初始局面
+- **value**：`{下一着: 权重}`，权重来自 Eleeye 职业比赛对局统计，可按权重随机/排序选着
+- 查询方式：把当前着法序列作为 key 直接查表，命中即出开局库，未命中走引擎
+
+坐标系约定：`a0` 为棋盘左下角（红方视角），列 `a-i`，行 `0-9`，与 Pikafish 一致。
+
 ## 目录结构
 
 ```
@@ -36,6 +61,7 @@ gui-web/         Web 界面与服务端
   server.py      HTTP 服务 + UCI 引擎桥接（开局库、MultiPV 候选、长将排除）
   book_tree.json 职业开局库（51,101 节点，由 BOOK.DAT 生成）
   build_book.py  BOOK.DAT → book_tree.json 转换脚本
+docs/            界面截图
 开始下棋.bat     一键启动
 usage.md         使用说明
 install-log.md   安装与来源校验记录（URL / SHA256）
