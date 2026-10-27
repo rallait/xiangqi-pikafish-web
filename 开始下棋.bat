@@ -1,11 +1,11 @@
 @echo off
 chcp 65001 >nul
-title ä¸­å›½è±¡æ£‹ Â· Pikafish AIï¼ˆå…³é—­æœ¬çª—å£å³é€€å‡ºï¼‰
+title ÖÐ¹úÏóÆå ¡¤ Pikafish AI£¨¹Ø±Õ±¾´°¿Ú¼´ÍË³ö£©
 cd /d %~dp0gui-web
 where python >nul 2>nul
 if errorlevel 1 (
-  echo æœªæ£€æµ‹åˆ° Pythonï¼Œè¯·å…ˆå®‰è£…ï¼šhttps://www.python.org/downloads/
-  echo å®‰è£…æ—¶åŠ¡å¿…å‹¾é€‰ "Add python.exe to PATH"
+  echo Î´¼ì²âµ½ Python£¬ÇëÏÈ°²×°£ºhttps://www.python.org/downloads/
+  echo °²×°Ê±Îñ±Ø¹´Ñ¡ "Add python.exe to PATH"
   pause
   exit /b 1
 )
