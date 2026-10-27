@@ -1,0 +1,11 @@
+# 安装包与第三方 GUI 不入库（体积大，且可从官方渠道获取）
+downloads/
+gui/
+
+# 中间产物与缓存
+__pycache__/
+*.pyc
+gui-web/err.txt
+gui-web/out.txt
+gui-web/_s3.json
+gui-web/book_wxf.json
