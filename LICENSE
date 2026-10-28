@@ -1,0 +1,43 @@
+MIT License
+
+Copyright (c) 2026 rallait
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+## 附加许可说明 / Additional Licensing Note
+
+本仓库包含两个独立的许可组件：
+
+### 1. 自研代码（MIT，见上方）
+范围：`gui-web/server.py`、`gui-web/index.html`、`gui-web/build_book.py`、`开始下棋.bat`、
+`README.md`、`README_EN.md`、`usage.md`、`docs/screenshot-*.png`。
+
+这些文件只受 MIT 许可约束，可自由用于闭源商业项目。
+
+### 2. 第三方组件（GPL-3.0）
+本仓库的**完整打包分发**（包括 `engine/` 目录下的 Pikafish 二进制、
+`gui-web/pikafish.nnue` 权重文件、以及 `gui-web/BOOK.DAT` 开局库源数据）
+整体受 GPL-3.0 约束，使用、修改、分发这些组件时须遵守 GPL-3.0。
+
+- Pikafish 引擎 + NNUE 权重：GPL-3.0（见 `engine/Copying.txt`、`engine/NNUE-License.md`）
+- Eleeye BOOK.DAT 开局库：GPL（原始许可由 Eleeye 项目授予）
+
+如果你只使用自研部分（MIT），请自行移除 `engine/` 目录并替换为你有权使用的引擎。
