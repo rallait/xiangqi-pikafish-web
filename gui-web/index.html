@@ -1602,6 +1602,8 @@ render();
 (function initTheme() {
   let saved = "cyber";
   try { saved = localStorage.getItem("xq_theme") || "cyber"; } catch (e) {}
+  const q = new URLSearchParams(location.search).get("theme"); // ?theme=xxx 可直接指定主题（分享链接用）
+  if (q && THEMES[q]) saved = q;
   const sel = document.getElementById("theme");
   sel.value = THEMES[saved] ? saved : "cyber";
   applyTheme(sel.value);

@@ -18,9 +18,17 @@ Top-tier engine · 51,101-node professional opening book · clickable candidate 
 ![Cyber neon theme](docs/screenshot-cyber.png)
 
 <details>
-<summary>More themes (classic wood)</summary>
+<summary>More theme screenshots (8 total)</summary>
 
-![Classic wood theme](docs/screenshot-wood.png)
+| Sakura | Porcelain |
+|---|---|
+| ![Sakura](docs/screenshot-sakura.png) | ![Porcelain](docs/screenshot-porcelain.png) |
+| **Nocturne** | **Black Gold** |
+| ![Nocturne](docs/screenshot-nocturne.png) | ![Black Gold](docs/screenshot-gold.png) |
+| **Classic Wood** | **Jade** |
+| ![Classic Wood](docs/screenshot-wood.png) | ![Jade](docs/screenshot-jade.png) |
+| **Ink Wash** | |
+| ![Ink Wash](docs/screenshot-ink.png) | |
 
 </details>
 
@@ -31,7 +39,7 @@ Top-tier engine · 51,101-node professional opening book · clickable candidate 
 - **Clickable candidate moves**: every AI move shows its top-3 candidates (Chinese notation + score + follow-up lines); **click any candidate to make the AI play that move instead**
 - **Plain-language evaluation card**: verdicts like "slight advantage" / "winning" instead of raw centipawns, plus an evaluation bar and Chinese-notation principal variation
 - **Full rule enforcement**: perpetual check / perpetual chase violations, threefold repetition, 60-move draw rule
-- **Polished UI**: 4 switchable themes (cyber neon / classic wood / celadon / ink), sliding move animation, capture shatter effects, full-screen check/checkmate banners, move-path arrows, captured-pieces display, move sounds
+- **Polished UI**: 8 switchable themes (cyber neon / classic wood / jade / ink wash / porcelain / nocturne / black gold / sakura, `?theme=xxx` URL param supported), sliding move animation, capture shatter effects, full-screen check/checkmate banners, move-path arrows, captured-pieces display, move sounds
 - **Opening-repertoire mode**: the AI sticks to a chosen repertoire (Central Cannon, Elephant Opening, etc.) while adapting to your replies
 
 ## Quick Start (Windows)
