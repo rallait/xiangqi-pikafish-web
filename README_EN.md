@@ -39,8 +39,10 @@ Top-tier engine · 51,101-node professional opening book · clickable candidate 
 - **Clickable candidate moves**: every AI move shows its top-3 candidates (Chinese notation + score + follow-up lines); **click any candidate to make the AI play that move instead**
 - **Plain-language evaluation card**: verdicts like "slight advantage" / "winning" instead of raw centipawns, plus an evaluation bar and Chinese-notation principal variation
 - **Full rule enforcement**: perpetual check / perpetual chase violations, threefold repetition, 60-move draw rule
-- **Polished UI**: 8 switchable themes (cyber neon / classic wood / jade / ink wash / porcelain / nocturne / black gold / sakura, `?theme=xxx` URL param supported), sliding move animation, capture shatter effects, full-screen check/checkmate banners, move-path arrows, captured-pieces display, move sounds
+- **Polished UI**: 8 switchable themes (cyber neon / classic wood / jade / ink wash / porcelain / nocturne / black gold / sakura, `?theme=xxx` URL param supported), sliding move animation, landing ripple shockwave, capture shatter effects, full-screen check/checkmate banners, pulsing ring on the checked king, move-path arrows, captured-pieces display, move sounds
 - **Opening-repertoire mode**: the AI sticks to a chosen repertoire (Central Cannon, Elephant Opening, etc.) while adapting to your replies
+- **PWA installable**: ships with a web app manifest + service worker — install it as a desktop app from the browser; static assets are cached for instant offline startup
+- **English UI**: `gui-web/index-en.html` is a full English interface (piece glyphs and Chinese notation kept); just open `/index-en.html`
 
 ## Quick Start (Windows)
 

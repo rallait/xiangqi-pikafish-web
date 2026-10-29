@@ -2,6 +2,11 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="theme-color" content="#0c1128" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="icon" href="/icon-192.png" />
+<link rel="apple-touch-icon" href="/icon-192.png" />
 <title>中国象棋 · Pikafish AI（离线）</title>
 <style>
   /* ===== 主题变量：cyber 为默认，body[data-theme] 覆盖 ===== */
@@ -294,6 +299,15 @@
   @keyframes shatter{to{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.15)}}
   .capghost{transform-box:fill-box;transform-origin:center;animation:capfade .5s ease-out forwards}
   @keyframes capfade{to{opacity:0;transform:scale(1.8)}}
+  /* ---- A5 落点涟漪冲击波（双方落子通用） ---- */
+  .ripple{transform-box:fill-box;transform-origin:center;animation:ripplefx .55s ease-out forwards}
+  .ripple.r2{animation-delay:.13s;animation-duration:.65s}
+  @keyframes ripplefx{0%{transform:scale(.45);opacity:.95}100%{transform:scale(2.35);opacity:0}}
+  /* ---- A6 被将军方老将红圈脉冲 ---- */
+  .chkpulse{transform-box:fill-box;transform-origin:center;
+    animation:chkping 1s ease-out infinite;filter:drop-shadow(0 0 6px rgba(255,45,85,.9))}
+  @keyframes chkping{0%{transform:scale(.92);opacity:1}70%{transform:scale(1.26);opacity:.3}
+    100%{transform:scale(1.42);opacity:0}}
   /* ---- A2 将军/绝杀全屏横幅 ---- */
   #fxbanner{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
     pointer-events:none;z-index:999;opacity:0}
@@ -1061,7 +1075,7 @@ function drawLastMove() {
 }
 
 function drawPieces() {
-  [...svg.querySelectorAll(".pc,.hint,.sel,.mvfx")].forEach(n => n.remove());
+  [...svg.querySelectorAll(".pc,.hint,.sel,.mvfx,.chkpulse")].forEach(n => n.remove());
   drawLastMove();
   for (let i = 0; i < 90; i++) {
     const p = board[i];
@@ -1097,6 +1111,13 @@ function drawPieces() {
       r: occupied ? R+4 : 9, fill: occupied ? TH.hintOcc : TH.hintDot,
       stroke: occupied ? TH.hintOccStroke : "none", "stroke-width": occupied ? 2 : 0 }));
   }
+  // 被将军一方老将的红圈脉冲（持续到应将为止）
+  if (kingAttacked(board, turn)) {
+    const kp = board.findIndex(p => p === (turn === RED ? "K" : "k"));
+    if (kp >= 0)
+      svg.appendChild(el("circle", { class:"chkpulse", cx:px(colOf(kp)), cy:py(rowOf(kp)),
+        r:R+7, fill:"none", stroke:"#ff2d55", "stroke-width":3.5 }));
+  }
   if (pendingAnim) {
     const a = pendingAnim; pendingAnim = null;
     playSlideFx(a);
@@ -1110,6 +1131,8 @@ function playSlideFx(a) {
   const dx = px(colOf(a.from)) - px(colOf(a.to));
   const dy = py(rowOf(a.from)) - py(rowOf(a.to));
   if (a.capP) shatterFx(a.to, a.capP);
+  const landRed = isRed(board[a.to]);
+  setTimeout(() => rippleFx(a.to, landRed), 210);   // 等滑行到位再激起涟漪
   svg.appendChild(t);            // 滑动中的棋子置于最上层
   t.classList.add("slide");
   t.style.transform = `translate(${dx}px, ${dy}px)`;
@@ -1117,6 +1140,18 @@ function playSlideFx(a) {
     t.style.transform = "";
     setTimeout(() => t.classList.remove("slide"), 300);
   }));
+}
+
+/* ---- A5：落点涟漪冲击波（双环扩散，按落子方配色） ---- */
+function rippleFx(i, red) {
+  const c = colOf(i), r = rowOf(i);
+  const g = el("g", { class:"mvfx" });
+  g.appendChild(el("circle", { class:"ripple", cx:px(c), cy:py(r), r:R+3,
+    fill:"none", stroke: red ? TH.redStroke : TH.blkStroke, "stroke-width":3.5 }));
+  g.appendChild(el("circle", { class:"ripple r2", cx:px(c), cy:py(r), r:R+3,
+    fill:"none", stroke: red ? TH.redText : TH.blkText, "stroke-width":2 }));
+  svg.appendChild(g);
+  setTimeout(() => g.remove(), 850);
 }
 
 function shatterFx(i, victimP) {
@@ -1613,6 +1648,9 @@ fetch("/health").then(r => r.json()).then(h => {
   if (h.ok) document.querySelector(".title").innerHTML =
     `<b>中国象棋</b> · ${h.engine} · 本地离线 · ${h.threads}线程/${h.hash}MB哈希`;
 }).catch(() => {});
+// PWA：注册 service worker（localhost 属 secure context，可离线缓存静态资源）
+if ("serviceWorker" in navigator)
+  navigator.serviceWorker.register("/sw.js").catch(() => {});
 </script>
 </body>
 </html>

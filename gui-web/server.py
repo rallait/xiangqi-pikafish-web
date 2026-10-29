@@ -341,6 +341,16 @@ def engine_call(fn):
         return fn(get_engine())
 
 
+# PWA / 英文版等静态文件：URL -> (文件名, Content-Type)
+STATIC_FILES = {
+    "/manifest.json": ("manifest.json", "application/manifest+json; charset=utf-8"),
+    "/sw.js": ("sw.js", "text/javascript; charset=utf-8"),
+    "/icon-192.png": ("icon-192.png", "image/png"),
+    "/icon-512.png": ("icon-512.png", "image/png"),
+    "/index-en.html": ("index-en.html", "text/html; charset=utf-8"),
+}
+
+
 class Handler(BaseHTTPRequestHandler):
     def log_message(self, *a):
         pass
@@ -369,6 +379,20 @@ class Handler(BaseHTTPRequestHandler):
             self._json({"ok": True, "engine": e.name, "nnue": e.nnue,
                         "threads": THREADS, "hash": HASH_MB,
                         "book": len(BOOK_TREE)})
+        elif self.path.split("?")[0] in STATIC_FILES:
+            fname, ctype = STATIC_FILES[self.path.split("?")[0]]
+            path = os.path.join(os.path.dirname(os.path.abspath(__file__)), fname)
+            try:
+                with open(path, "rb") as f:
+                    data = f.read()
+            except OSError:
+                self._json({"ok": False, "error": "not found"}, 404)
+                return
+            self.send_response(200)
+            self.send_header("Content-Type", ctype)
+            self.send_header("Content-Length", str(len(data)))
+            self.end_headers()
+            self.wfile.write(data)
         else:
             self._json({"ok": False, "error": "not found"}, 404)
 
