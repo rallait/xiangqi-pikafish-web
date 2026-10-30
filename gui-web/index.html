@@ -299,15 +299,56 @@
   @keyframes shatter{to{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.15)}}
   .capghost{transform-box:fill-box;transform-origin:center;animation:capfade .5s ease-out forwards}
   @keyframes capfade{to{opacity:0;transform:scale(1.8)}}
-  /* ---- A5 落点涟漪冲击波（双方落子通用） ---- */
-  .ripple{transform-box:fill-box;transform-origin:center;animation:ripplefx .55s ease-out forwards}
+  /* ---- FX 强度三档 ---- */
+  body[data-fx="off"] .ripple,
+  body[data-fx="off"] .chkpulse,
+  body[data-fx="off"] .fxtra{ display:none !important }
+  body[data-fx="low"] .ripple{ animation-duration:.35s }
+  body[data-fx="low"] .ripple.r2{ animation-duration:.45s; animation-delay:.08s }
+  body[data-fx="low"] .chkpulse{ animation-duration:1.6s; animation-iteration-count:1 }
+  body[data-fx="low"] .fxtra{ animation-duration:.35s !important }
+  /* ---- A5 落点涟漪（base） ---- */
+  .ripple{transform-box:fill-box;transform-origin:center;animation:ripplefx .55s ease-out forwards;pointer-events:none}
   .ripple.r2{animation-delay:.13s;animation-duration:.65s}
   @keyframes ripplefx{0%{transform:scale(.45);opacity:.95}100%{transform:scale(2.35);opacity:0}}
-  /* ---- A6 被将军方老将红圈脉冲 ---- */
-  .chkpulse{transform-box:fill-box;transform-origin:center;
-    animation:chkping 1s ease-out infinite;filter:drop-shadow(0 0 6px rgba(255,45,85,.9))}
-  @keyframes chkping{0%{transform:scale(.92);opacity:1}70%{transform:scale(1.26);opacity:.3}
-    100%{transform:scale(1.42);opacity:0}}
+  /* ---- A6 将军圈变体 ---- */
+  .chkpulse{transform-box:fill-box;transform-origin:center;animation:chkping 1s ease-out infinite;pointer-events:none}
+  @keyframes chkping{0%{transform:scale(.92);opacity:1}70%{transform:scale(1.26);opacity:.3}100%{transform:scale(1.42);opacity:0}}
+  .chkspin{animation:chkspin 1.4s linear infinite;transform-origin:center}
+  @keyframes chkspin{0%{transform:rotate(0) scale(.95);opacity:1}50%{opacity:.6}100%{transform:rotate(360deg) scale(1.4);opacity:0}}
+  .chksoft{animation:chksoft 1.8s ease-in-out infinite;transform-origin:center}
+  @keyframes chksoft{0%,100%{transform:scale(.95);opacity:.85}50%{transform:scale(1.2);opacity:.25}}
+  .chkglow{animation:chkglow 1s ease-out infinite;transform-origin:center;filter:drop-shadow(0 0 8px currentColor)}
+  @keyframes chkglow{0%{transform:scale(.9);opacity:1}100%{transform:scale(1.5);opacity:0}}
+  /* ---- 额外元素（射线/花瓣/三角） ---- */
+  .fxtra{pointer-events:none;transform-box:fill-box;transform-origin:center}
+  .fxtra.ray{animation:rayfx .6s ease-out forwards}
+  @keyframes rayfx{0%{transform:scale(.2);opacity:.9}100%{transform:scale(2.2);opacity:0}}
+  .fxtra.petal{animation:petalfx .7s cubic-bezier(.3,.7,.6,1) forwards}
+  @keyframes petalfx{0%{opacity:.9;transform:translate(0,0) rotate(0) scale(.6)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(var(--rot)) scale(1)}}
+  .fxtra.tri{animation:trisfx .65s ease-out forwards}
+  @keyframes trisfx{0%{opacity:.9;transform:scale(.4)}100%{opacity:0;transform:scale(2.1) rotate(120deg)}}
+  .fxtra.splash{animation:splashfx .7s ease-out forwards}
+  @keyframes splashfx{0%{opacity:.8;transform:scale(.3);filter:blur(0)}100%{opacity:0;transform:scale(1.9);filter:blur(2px)}}
+  /* ===== 主题差异化涟漪样式 ===== */
+  /* cyber：霓虹发光 + 射线 */
+  body[data-theme="cyber"] .ripple{filter:drop-shadow(0 0 6px currentColor)}
+  body[data-theme="cyber"] .ripple.r2{stroke-dasharray:4 3;filter:drop-shadow(0 0 10px currentColor)}
+  /* wood：虚线木纹 */
+  body[data-theme="wood"] .ripple.r2{stroke-dasharray:2 5;stroke-linecap:round;opacity:.75}
+  /* jade：翡翠三角波（r2 用 stroke-dasharray 做三角脉冲） */
+  body[data-theme="jade"] .ripple.r2{stroke-dasharray:9 2;filter:drop-shadow(0 0 6px currentColor)}
+  /* ink：墨滴扩散（r2 模糊 + 波浪） */
+  body[data-theme="ink"] .ripple.r2{stroke-dasharray:5 3;stroke-width:1.5;opacity:.85}
+  /* porcelain：青花水波 */
+  body[data-theme="porcelain"] .ripple.r2{stroke-dasharray:7 2 3 2;stroke-width:1.5}
+  /* nocturne：紫色闪烁 + 偏移脉冲 */
+  body[data-theme="nocturne"] .ripple{animation-timing-function:cubic-bezier(.2,.8,.4,1);filter:drop-shadow(0 0 8px currentColor)}
+  body[data-theme="nocturne"] .ripple.r2{stroke-dasharray:3 4;filter:hue-rotate(15deg) drop-shadow(0 0 10px currentColor)}
+  /* gold：金光双层（r2 更细更亮） */
+  body[data-theme="gold"] .ripple.r2{stroke-width:1.5;opacity:.85;filter:drop-shadow(0 0 8px currentColor)}
+  /* sakura：粉色柔光圈 + r2 细虚线 */
+  body[data-theme="sakura"] .ripple.r2{stroke-dasharray:2 4;opacity:.7}
   /* ---- A2 将军/绝杀全屏横幅 ---- */
   #fxbanner{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
     pointer-events:none;z-index:999;opacity:0}
@@ -405,8 +446,15 @@
         <button id="undo">悔棋</button>
         <button id="analyze">分析局面</button>
       </div>
-      <div class="row">
+      <div class="row" style="gap:14px">
         <label class="sw"><input type="checkbox" id="sound" checked> 落子音效</label>
+        <label class="sw" style="gap:6px">动效
+          <select id="fx" style="background:var(--input-bg);color:var(--input-color);border:1px solid var(--input-border);border-radius:5px;padding:1px 4px;font-size:12px">
+            <option value="off">静</option>
+            <option value="low">轻</option>
+            <option value="high" selected>强</option>
+          </select>
+        </label>
       </div>
       <div class="row"><span class="turnhint" id="lasthint">—</span></div>
       <div class="status" id="status">点击「开始新对局」</div>
@@ -844,7 +892,8 @@ const THEMES = {
     sel:"#00f0ff", hintDot:"rgba(0,240,255,.5)", hintOcc:"rgba(255,45,85,.14)", hintOccStroke:"#ff2d55",
     lastFill:"rgba(0,240,255,.10)", lastStroke:"#00f0ff",
     ai:"#00f0ff", human:"#ff2d55",
-    aiBadge:"rgba(0,20,30,.92)", humanBadge:"rgba(32,4,20,.92)", badgeGlow:true
+    aiBadge:"rgba(0,20,30,.92)", humanBadge:"rgba(32,4,20,.92)", badgeGlow:true,
+    fx:{rippleExtra:"rays",chkClass:"chkspin",chkStroke:"#ff2d55",chkGlow:"drop-shadow(0 0 10px #ff2d55)"}
   },
   wood: {
     wood:[[0,"#f2ddad"],[0.45,"#e6c88e"],[0.8,"#d8b478"],[1,"#cda869"]],
@@ -861,7 +910,8 @@ const THEMES = {
     sel:"#e0a93c", hintDot:"rgba(60,140,90,.55)", hintOcc:"rgba(200,60,40,.12)", hintOccStroke:"#c0392b",
     lastFill:"rgba(216,178,90,.14)", lastStroke:"#b8903f",
     ai:"#d9791f", human:"#1f8f7f",
-    aiBadge:"rgba(60,38,14,.92)", humanBadge:"rgba(18,54,46,.92)", badgeGlow:false
+    aiBadge:"rgba(60,38,14,.92)", humanBadge:"rgba(18,54,46,.92)", badgeGlow:false,
+    fx:{rippleExtra:null,chkClass:"chksoft",chkStroke:"#c0392b",chkGlow:null}
   },
   jade: {
     wood:[[0,"#0e2b22"],[0.45,"#0b241c"],[0.8,"#081c16"],[1,"#06140f"]],
@@ -878,7 +928,8 @@ const THEMES = {
     sel:"#f5c96b", hintDot:"rgba(52,211,153,.55)", hintOcc:"rgba(255,123,84,.15)", hintOccStroke:"#ff7b54",
     lastFill:"rgba(245,201,107,.10)", lastStroke:"#f5c96b",
     ai:"#34d399", human:"#f5c96b",
-    aiBadge:"rgba(6,26,20,.92)", humanBadge:"rgba(30,22,6,.92)", badgeGlow:true
+    aiBadge:"rgba(6,26,20,.92)", humanBadge:"rgba(30,22,6,.92)", badgeGlow:true,
+    fx:{rippleExtra:"tri",chkClass:"chksoft",chkStroke:"#ff7b54",chkGlow:"drop-shadow(0 0 8px #ff7b54)"}
   },
   ink: {
     wood:[[0,"#f7f2e6"],[0.45,"#f1ead9"],[0.8,"#e9dfc9"],[1,"#e0d4ba"]],
@@ -895,7 +946,8 @@ const THEMES = {
     sel:"#a4372b", hintDot:"rgba(90,130,90,.5)", hintOcc:"rgba(164,55,43,.12)", hintOccStroke:"#a4372b",
     lastFill:"rgba(120,100,60,.12)", lastStroke:"#8a7452",
     ai:"#2e6b8a", human:"#a4372b",
-    aiBadge:"rgba(240,235,220,.95)", humanBadge:"rgba(245,225,215,.95)", badgeGlow:false
+    aiBadge:"rgba(240,235,220,.95)", humanBadge:"rgba(245,225,215,.95)", badgeGlow:false,
+    fx:{rippleExtra:"splash",chkClass:"chkpulse",chkStroke:"#a4372b",chkGlow:null}
   },
   porcelain: {
     wood:[[0,"#fdfdfe"],[0.45,"#f2f7fc"],[0.8,"#e3edf7"],[1,"#d4e3f2"]],
@@ -912,7 +964,8 @@ const THEMES = {
     sel:"#2e5fa3", hintDot:"rgba(46,95,163,.45)", hintOcc:"rgba(192,57,43,.12)", hintOccStroke:"#c0392b",
     lastFill:"rgba(46,95,163,.10)", lastStroke:"#3d6aa8",
     ai:"#1d4e9e", human:"#c0392b",
-    aiBadge:"rgba(240,246,252,.95)", humanBadge:"rgba(250,240,238,.95)", badgeGlow:false
+    aiBadge:"rgba(240,246,252,.95)", humanBadge:"rgba(250,240,238,.95)", badgeGlow:false,
+    fx:{rippleExtra:null,chkClass:"chksoft",chkStroke:"#c0392b",chkGlow:null}
   },
   nocturne: {
     wood:[[0,"#191224"],[0.4,"#140e1e"],[0.75,"#0e0918"],[1,"#0a0712"]],
@@ -929,7 +982,8 @@ const THEMES = {
     sel:"#f472b6", hintDot:"rgba(167,139,250,.5)", hintOcc:"rgba(244,63,94,.14)", hintOccStroke:"#f43f5e",
     lastFill:"rgba(167,139,250,.10)", lastStroke:"#a78bfa",
     ai:"#a78bfa", human:"#f472b6",
-    aiBadge:"rgba(22,14,40,.92)", humanBadge:"rgba(40,10,28,.92)", badgeGlow:true
+    aiBadge:"rgba(22,14,40,.92)", humanBadge:"rgba(40,10,28,.92)", badgeGlow:true,
+    fx:{rippleExtra:"rays",chkClass:"chkspin",chkStroke:"#f43f5e",chkGlow:"drop-shadow(0 0 10px #f43f5e)"}
   },
   gold: {
     wood:[[0,"#1b1812"],[0.4,"#16130e"],[0.75,"#100e0a"],[1,"#0b0a07"]],
@@ -946,7 +1000,8 @@ const THEMES = {
     sel:"#f0d68a", hintDot:"rgba(212,175,55,.5)", hintOcc:"rgba(224,72,58,.14)", hintOccStroke:"#e0483a",
     lastFill:"rgba(212,175,55,.10)", lastStroke:"#d4af37",
     ai:"#d4af37", human:"#e0483a",
-    aiBadge:"rgba(30,24,10,.92)", humanBadge:"rgba(40,12,10,.92)", badgeGlow:true
+    aiBadge:"rgba(30,24,10,.92)", humanBadge:"rgba(40,12,10,.92)", badgeGlow:true,
+    fx:{rippleExtra:"rays",chkClass:"chkspin",chkStroke:"#e0483a",chkGlow:"drop-shadow(0 0 10px #e0483a)"}
   },
   sakura: {
     wood:[[0,"#fff8fa"],[0.45,"#fdeef3"],[0.8,"#f9dfe8"],[1,"#f3cfdd"]],
@@ -963,10 +1018,12 @@ const THEMES = {
     sel:"#e0526b", hintDot:"rgba(214,139,160,.55)", hintOcc:"rgba(224,82,107,.14)", hintOccStroke:"#e0526b",
     lastFill:"rgba(224,82,107,.10)", lastStroke:"#d6688a",
     ai:"#6b4a5e", human:"#e0526b",
-    aiBadge:"rgba(250,240,244,.95)", humanBadge:"rgba(252,235,240,.95)", badgeGlow:false
+    aiBadge:"rgba(250,240,244,.95)", humanBadge:"rgba(252,235,240,.95)", badgeGlow:false,
+    fx:{rippleExtra:"petals",chkClass:"chksoft",chkStroke:"#c23a52",chkGlow:"drop-shadow(0 0 6px #c23a52)"}
   }
 };
 let TH = THEMES.cyber;
+let FX_LEVEL = "high";  // "off" | "low" | "high"
 
 function applyTheme(key) {
   TH = THEMES[key] || THEMES.cyber;
@@ -1075,7 +1132,7 @@ function drawLastMove() {
 }
 
 function drawPieces() {
-  [...svg.querySelectorAll(".pc,.hint,.sel,.mvfx,.chkpulse")].forEach(n => n.remove());
+  [...svg.querySelectorAll(".pc,.hint,.sel,.mvfx,.chkpulse,.chkspin,.chksoft,.fxtra")].forEach(n => n.remove());
   drawLastMove();
   for (let i = 0; i < 90; i++) {
     const p = board[i];
@@ -1111,12 +1168,23 @@ function drawPieces() {
       r: occupied ? R+4 : 9, fill: occupied ? TH.hintOcc : TH.hintDot,
       stroke: occupied ? TH.hintOccStroke : "none", "stroke-width": occupied ? 2 : 0 }));
   }
-  // 被将军一方老将的红圈脉冲（持续到应将为止）
+  // 被将军一方老将的脉冲圈（读主题 fx 配置：chkClass/chkStroke/chkGlow）
   if (kingAttacked(board, turn)) {
     const kp = board.findIndex(p => p === (turn === RED ? "K" : "k"));
-    if (kp >= 0)
-      svg.appendChild(el("circle", { class:"chkpulse", cx:px(colOf(kp)), cy:py(rowOf(kp)),
-        r:R+7, fill:"none", stroke:"#ff2d55", "stroke-width":3.5 }));
+    if (kp >= 0) {
+      const fx = TH.fx || {};
+      const cls = fx.chkClass || "chkpulse";
+      const style = (fx.chkGlow ? `filter:${fx.chkGlow};` : "") +
+                    (fx.chkStroke ? `stroke:${fx.chkStroke};` : "");
+      svg.appendChild(el("circle", { class:cls, cx:px(colOf(kp)), cy:py(rowOf(kp)),
+        r:R+7, fill:"none", "stroke-width":3.5, style }));
+      // 深色主题加一层旋转虚线圈叠加强度
+      if (cls === "chkspin" || cls === "chkglow") {
+        svg.appendChild(el("circle", { class:cls, cx:px(colOf(kp)), cy:py(rowOf(kp)),
+          r:R+12, fill:"none", "stroke-width":1.8, "stroke-dasharray":"3 4",
+          style: (fx.chkStroke ? `stroke:${fx.chkStroke};` : "") + "opacity:.55" }));
+      }
+    }
   }
   if (pendingAnim) {
     const a = pendingAnim; pendingAnim = null;
@@ -1132,7 +1200,10 @@ function playSlideFx(a) {
   const dy = py(rowOf(a.from)) - py(rowOf(a.to));
   if (a.capP) shatterFx(a.to, a.capP);
   const landRed = isRed(board[a.to]);
-  setTimeout(() => rippleFx(a.to, landRed), 210);   // 等滑行到位再激起涟漪
+  if (FX_LEVEL !== "off") {
+    const delay = FX_LEVEL === "low" ? 140 : 210;
+    setTimeout(() => rippleFx(a.to, landRed), delay);
+  }
   svg.appendChild(t);            // 滑动中的棋子置于最上层
   t.classList.add("slide");
   t.style.transform = `translate(${dx}px, ${dy}px)`;
@@ -1142,16 +1213,70 @@ function playSlideFx(a) {
   }));
 }
 
-/* ---- A5：落点涟漪冲击波（双环扩散，按落子方配色） ---- */
+/* ---- A5：落点涟漪冲击波（双环 + 主题专属额外元素） ---- */
 function rippleFx(i, red) {
   const c = colOf(i), r = rowOf(i);
+  const cx = px(c), cy = py(r);
+  const mainColor = red ? TH.redStroke : TH.blkStroke;
+  const r2Color = red ? TH.redText : TH.blkText;
+  const extraType = TH.fx && TH.fx.rippleExtra;
+  const op = FX_LEVEL === "low" ? 0.45 : 1;
   const g = el("g", { class:"mvfx" });
-  g.appendChild(el("circle", { class:"ripple", cx:px(c), cy:py(r), r:R+3,
-    fill:"none", stroke: red ? TH.redStroke : TH.blkStroke, "stroke-width":3.5 }));
-  g.appendChild(el("circle", { class:"ripple r2", cx:px(c), cy:py(r), r:R+3,
-    fill:"none", stroke: red ? TH.redText : TH.blkText, "stroke-width":2 }));
+  g.appendChild(el("circle", { class:"ripple", cx, cy, r:R+3, fill:"none",
+    stroke:mainColor, "stroke-width":3.5, style:`opacity:${op}` }));
+  g.appendChild(el("circle", { class:"ripple r2", cx, cy, r:R+3, fill:"none",
+    stroke:r2Color, "stroke-width":2, style:`opacity:${op * 0.85}` }));
+  if (FX_LEVEL !== "off" && extraType) addRippleExtras(g, extraType, cx, cy, mainColor, r2Color, op);
   svg.appendChild(g);
-  setTimeout(() => g.remove(), 850);
+  setTimeout(() => g.remove(), FX_LEVEL === "low" ? 550 : 900);
+}
+
+/* 主题专属涟漪额外元素（射线/花瓣/三角/墨滴） */
+function addRippleExtras(g, type, cx, cy, main, r2, op) {
+  if (type === "rays") {
+    // 8 道放射状短线
+    for (let k = 0; k < 8; k++) {
+      const ang = k * Math.PI / 4;
+      const x1 = cx + Math.cos(ang) * (R + 4), y1 = cy + Math.sin(ang) * (R + 4);
+      const x2 = cx + Math.cos(ang) * (R + 14), y2 = cy + Math.sin(ang) * (R + 14);
+      g.appendChild(el("line", { class:"fxtra ray", x1, y1, x2, y2, stroke:r2,
+        "stroke-width":2, "stroke-linecap":"round", style:`opacity:${op}` }));
+    }
+  } else if (type === "petals") {
+    // 8 片粉色花瓣向外飞
+    for (let k = 0; k < 8; k++) {
+      const ang = k * Math.PI / 4;
+      const d = 18 + Math.random() * 10;
+      const dx = (Math.cos(ang) * d).toFixed(1) + "px";
+      const dy = (Math.sin(ang) * d).toFixed(1) + "px";
+      const rot = (k * 45 + Math.random() * 30).toFixed(0);
+      g.appendChild(el("circle", { class:"fxtra petal", cx, cy, r:4, fill:main,
+        "stroke-width":0,
+        style:`opacity:${op};--dx:${dx};--dy:${dy};--rot:${rot}deg` }));
+    }
+  } else if (type === "tri") {
+    // 三个同心三角
+    const pts = (rad) => {
+      const arr = [];
+      for (let k = 0; k < 3; k++) {
+        const a = -Math.PI / 2 + k * (Math.PI * 2 / 3);
+        arr.push(`${(cx + Math.cos(a) * rad).toFixed(1)},${(cy + Math.sin(a) * rad).toFixed(1)}`);
+      }
+      return arr.join(" ");
+    };
+    g.appendChild(el("polygon", { class:"fxtra tri", points:pts(R+2), fill:"none",
+      stroke:main, "stroke-width":2.5, style:`opacity:${op}` }));
+  } else if (type === "splash") {
+    // 不规则墨滴：4 个错位小圆 + 1 个不规则形状（多边形）
+    g.appendChild(el("circle", { class:"fxtra splash", cx, cy, r:R*0.8, fill:main,
+      style:`opacity:${op*0.4}` }));
+    for (let k = 0; k < 3; k++) {
+      const ang = Math.random() * Math.PI * 2, d = 6 + Math.random() * 6;
+      g.appendChild(el("circle", { class:"fxtra splash",
+        cx: cx + Math.cos(ang)*d, cy: cy + Math.sin(ang)*d, r:3+Math.random()*2,
+        fill:main, style:`opacity:${op*0.5}` }));
+    }
+  }
 }
 
 function shatterFx(i, victimP) {
@@ -1643,6 +1768,21 @@ render();
   sel.value = THEMES[saved] ? saved : "cyber";
   applyTheme(sel.value);
   sel.onchange = () => applyTheme(sel.value);
+})();
+(function initFX() {
+  let saved = "high";
+  try { saved = localStorage.getItem("xq_fx") || "high"; } catch (e) {}
+  if (!["off","low","high"].includes(saved)) saved = "high";
+  FX_LEVEL = saved;
+  document.body.dataset.fx = saved;
+  const fxSel = document.getElementById("fx");
+  fxSel.value = saved;
+  fxSel.onchange = () => {
+    FX_LEVEL = fxSel.value;
+    document.body.dataset.fx = fxSel.value;
+    try { localStorage.setItem("xq_fx", fxSel.value); } catch (e) {}
+    render();  // 重新画，将军圈样式才会刷新
+  };
 })();
 fetch("/health").then(r => r.json()).then(h => {
   if (h.ok) document.querySelector(".title").innerHTML =
