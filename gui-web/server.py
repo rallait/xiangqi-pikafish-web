@@ -420,7 +420,8 @@ class Handler(BaseHTTPRequestHandler):
         try:
             if self.path == "/ai":
                 moves = body.get("moves") or []
-                node = book_probe(moves)
+                # 截图导入的局面带 nobook：跳过职业开局库，直接引擎分析当前形势
+                node = None if body.get("nobook") else book_probe(moves)
                 if node:
                     top = sorted(node.items(), key=lambda kv: -kv[1])[:3]
                     self._json({"ok": True, "best": book_pick(node, RNG),
@@ -443,7 +444,7 @@ class Handler(BaseHTTPRequestHandler):
                     self._json({"ok": False, "error": "empty allow list"}, 400)
                     return
                 # 职业开局库优先：套路着法与库候选取交集，按库权重选；无交集再走引擎 MultiPV
-                node = book_probe(moves)
+                node = None if body.get("nobook") else book_probe(moves)
                 if node:
                     inter = [(u, w) for u, w in node.items()
                              if u in allow and u not in exclude]

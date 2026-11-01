@@ -402,6 +402,7 @@
     max-height:52vh;display:flex;justify-content:center}
   #impCanvas{display:block;max-width:100%;height:auto;cursor:crosshair;touch-action:none}
   .imp-tip{font-size:11.5px;line-height:1.7;color:var(--tip)}
+  .imp-forget{text-decoration:underline;cursor:pointer;margin-left:6px}
   .imp-right{flex:0 0 296px;display:flex;flex-direction:column;gap:8px;min-width:0}
   #impGrid{display:grid;grid-template-columns:repeat(9,1fr);gap:3px}
   .imp-cell{aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;border-radius:6px;
@@ -520,7 +521,7 @@
       <div class="imp-right">
         <div id="impGrid"></div>
         <div id="impPick" hidden></div>
-        <div class="imp-tip">点格子可改正；带黄圈的是把握偏低、建议核对。</div>
+        <div class="imp-tip">点格子可改正，改正时会自动学习该字体，下次同类截图直接认出；带黄圈的是把握偏低、建议核对。<span id="impForget" class="imp-forget" hidden></span></div>
       </div>
     </div>
     <div class="imp-foot">
@@ -681,6 +682,7 @@ const BOOK = {
 const BOOK_PLIES = 12;   // 前 6 回合（双方各 6 步）内按套路
 
 function themeSignature() {
+  if (importedGame) return null;
   const key = document.getElementById("book").value;
   if (key === "none") return null;
   const entry = BOOK[key];
@@ -701,6 +703,7 @@ function themeSignature() {
 }
 
 function themeCandidates() {
+  if (importedGame) return null;
   const key = document.getElementById("book").value;
   if (key === "none") return null;
   if (moveList.length >= BOOK_PLIES) return null;
@@ -754,6 +757,7 @@ let legal = [];         // 当前选中棋子的合法目标
 let thinking = false;
 let gameOver = false;
 let gameGen = 0;   // 局面代际：导入截图时自增，使在途的 AI 结果失效
+let importedGame = false;   // 本局是截图导入的：禁用套路与职业开局库，一切按当前形势由引擎分析
 
 function parseFEN(fen) {
   const b = new Array(90).fill(null);
@@ -1731,7 +1735,7 @@ async function aiMove() {
       const r = await fetch("/ai_theme", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ moves, level, allow: th.allow, force: !!th.seq })
+        body: JSON.stringify({ moves, level, allow: th.allow, force: !!th.seq, nobook: importedGame })
       }).then(r => r.json());
       if (r.ok && r.best) { res = r; usedTheme = true; }
       else if (r.ok) setStatus(`「${th.name}」当前着法均不利，AI 自由发挥…`);
@@ -1740,7 +1744,7 @@ async function aiMove() {
       res = await fetch("/ai", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ moves, level })
+        body: JSON.stringify({ moves, level, nobook: importedGame })
       }).then(r => r.json());
       if (!res.ok) throw new Error(res.error || "引擎错误");
     }
@@ -1830,6 +1834,7 @@ async function analyzeNow() {
 
 /* ================= 按钮 ================= */
 document.getElementById("newgame").onclick = () => {
+  importedGame = false;
   humanSide = document.getElementById("side").value === "red" ? RED : BLK;
   flipped = (humanSide === BLK);   // 执黑 → 黑方在下半盘
   resetBoard();
@@ -1925,6 +1930,30 @@ const IMP_TPL = [{"set":"a","t":[{"p":"A","c":"b","n":2,"ink":0.236,"h":"0000000
   function tpls() {
     if (!TPLS) TPLS = IMP_TPL.map(g => g.t.map(x => ({ p: x.p, c: x.c, b: unpack(x.h) })));
     return TPLS;
+  }
+
+  /* ---------- 用户模板：纠错即学习，存 localStorage，匹配时优先 ---------- */
+  function pack(bits) {
+    let h = "";
+    for (let i = 0; i < bits.length; i += 4)
+      h += ((bits[i] << 3) | (bits[i + 1] << 2) | (bits[i + 1] << 1) | bits[i + 2]).toString(16);
+    return h;
+  }
+  let USR = null;
+  function usrTpls() {
+    if (!USR) {
+      let arr = [];
+      try { arr = JSON.parse(localStorage.getItem("impUsrTpl") || "[]"); } catch (e) {}
+      USR = arr.map(x => ({ p: x.p, c: x.c, b: unpack(x.h), h: x.h }));
+    }
+    return USR;
+  }
+  function learnTpl(p, c, bits) {
+    const h = pack(bits);
+    const u = usrTpls();
+    if (u.some(x => x.h === h && x.p === p && x.c === c)) return;
+    u.push({ p, c, b: bits, h });
+    try { localStorage.setItem("impUsrTpl", JSON.stringify(u.map(x => ({ p: x.p, c: x.c, h: x.h })))); } catch (e) {}
   }
 
   /* ---------- 状态 ---------- */
@@ -2216,6 +2245,7 @@ const IMP_TPL = [{"set":"a","t":[{"p":"A","c":"b","n":2,"ink":0.236,"h":"0000000
         }
       }
       const sets = tpls();
+      const usr = usrTpls();
       const acc = sets.map(() => 0);
       const occ = new Array(90);
       for (let i = 0; i < 90; i++) {
@@ -2228,9 +2258,13 @@ const IMP_TPL = [{"set":"a","t":[{"p":"A","c":"b","n":2,"ink":0.236,"h":"0000000
       const cells = new Array(90);
       for (let i = 0; i < 90; i++) {
         if (!occ[i]) { cells[i] = { empty: true }; continue; }
-        const b = bestIn(sets[setIdx], raw[i].bits, 1);
+        let b = bestIn(sets[setIdx], raw[i].bits, 1);
+        if (usr.length) {
+          const bu = bestIn(usr, raw[i].bits, 1);
+          if (bu.sc > b.sc) b = bu;          // 用户学过的字形优先
+        }
         if (b.sc < MIN_CONF) { cells[i] = { empty: true }; continue; }
-        cells[i] = { p: b.p, c: b.c, color: "?", conf: b.sc, empty: false };
+        cells[i] = { p: b.p, c: b.c, color: "?", conf: b.sc, empty: false, bits: raw[i].bits };
       }
       let kingRow = -1;
       for (let i = 0; i < 90; i++) {
@@ -2252,6 +2286,7 @@ const IMP_TPL = [{"set":"a","t":[{"p":"A","c":"b","n":2,"ink":0.236,"h":"0000000
         else cell.color = posC;
       }
       cur.cells = cells;
+      cur.raw = raw;               // 留着原始字形：漏认格手工补子时也能学习
       cur.rotate = rotate;
       cur.setIdx = setIdx;
       drawPreview();
@@ -2304,8 +2339,16 @@ const IMP_TPL = [{"set":"a","t":[{"p":"A","c":"b","n":2,"ink":0.236,"h":"0000000
       b.textContent = label;
       if (opt && !cell.empty && cell.p === opt.p && cell.color === opt.c) b.classList.add("cur");
       b.onclick = () => {
+        if (opt) {
+          const bits = (cell && cell.bits) || (cur.raw && cur.raw[i] && cur.raw[i].bits);
+          if (bits) {
+            learnTpl(opt.p, opt.c, bits);    // 纠错即学习：这套皮肤下次自动认出
+            info.textContent = `已学习 ${usrTpls().length} 个字形，同类截图下次自动识别。`;
+            refreshForget();
+          }
+        }
         cur.cells[i] = opt
-          ? { p: opt.p, c: opt.c, color: opt.c, conf: 1, empty: false }
+          ? { p: opt.p, c: opt.c, color: opt.c, conf: 1, empty: false, bits: cell && cell.bits }
           : { empty: true };
         pickHost.hidden = true;
         drawPreview(); renderGrid();
@@ -2344,6 +2387,7 @@ const IMP_TPL = [{"set":"a","t":[{"p":"A","c":"b","n":2,"ink":0.236,"h":"0000000
     humanSide = sideSel.value === "red" ? RED : BLK;
     flipped = humanSide === BLK;
     turn = turnSel.value === "red" ? RED : BLK;
+    importedGame = true;
     moveList = []; selected = -1; legal = []; gameOver = false;
     lastAI = null; pendingAnim = null; thinking = false;
     posHistory = {};
@@ -2360,6 +2404,17 @@ const IMP_TPL = [{"set":"a","t":[{"p":"A","c":"b","n":2,"ink":0.236,"h":"0000000
   }
 
   /* ---------- 模态 ---------- */
+  function refreshForget() {
+    const n = usrTpls().length;
+    const el = document.getElementById("impForget");
+    el.hidden = !n;
+    el.textContent = `清除已学字形(${n})`;
+  }
+  document.getElementById("impForget").onclick = () => {
+    USR = [];
+    try { localStorage.removeItem("impUsrTpl"); } catch (e) {}
+    refreshForget();
+  };
   function openModal() {
     mask.classList.add("on");
     drop.hidden = false; work.hidden = true;
@@ -2368,6 +2423,7 @@ const IMP_TPL = [{"set":"a","t":[{"p":"A","c":"b","n":2,"ink":0.236,"h":"0000000
     cur = null;
     sideSel.value = document.getElementById("side").value || "red";
     turnSel.value = "red";
+    refreshForget();
   }
   function closeModal() { mask.classList.remove("on"); }
 
