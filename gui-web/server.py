@@ -266,6 +266,23 @@ class Engine:
                     break
             if picked and (force or score_to_int(picked["score"]) >= self.THEME_GIVEUP_CP):
                 return {**picked, "candidates": cand_list(lines)}
+            if force and not picked:
+                # force 模式：套路着法可能排名太低进不了 MultiPV 候选（如退炮），
+                # 用 searchmoves 定向搜索直接拿到该着法的真实评分
+                targets = [u for u in allowed if u not in excl]
+                if targets:
+                    try:
+                        r2 = self._go(moves, movetime, 1, searchmoves=targets)
+                    except RuntimeError:
+                        self._restart()
+                        return {"best": "", "score": "", "depth": 0,
+                                "tried": len(lines), "theme": True,
+                                "candidates": cand_list(lines)}
+                    if r2.get("best") and r2["best"] != "(none)":
+                        return {"best": r2["best"], "score": r2.get("score", ""),
+                                "depth": r2.get("depth", 0),
+                                "tried": len(lines), "theme": True,
+                                "candidates": cand_list(lines)}
             return {"best": "", "score": "", "depth": 0,
                     "tried": len(lines), "theme": True,
                     "candidates": cand_list(lines)}
