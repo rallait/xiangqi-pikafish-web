@@ -239,7 +239,7 @@ class Engine:
     # 套路内最优着法若已明显亏损（AI 视角低于该值），视为套路不适用，交还引擎自由发挥
     THEME_GIVEUP_CP = -60
 
-    def themed(self, moves, allowed, movetime, exclude=None):
+    def themed(self, moves, allowed, movetime, exclude=None, force=False):
         """一次 MultiPV 搜索，从引擎排序结果里挑第一个属于套路集合的着法。
         只 go 一次，避免连续 go 导致的引擎管道污染；score 是 AI 自己视角。
         若套路内最优也已明显亏损，返回空让前端 fallback 到自由发挥。
@@ -264,7 +264,7 @@ class Engine:
                               "depth": entry.get("depth", 0),
                               "tried": len(lines), "theme": True}
                     break
-            if picked and score_to_int(picked["score"]) >= self.THEME_GIVEUP_CP:
+            if picked and (force or score_to_int(picked["score"]) >= self.THEME_GIVEUP_CP):
                 return {**picked, "candidates": cand_list(lines)}
             return {"best": "", "score": "", "depth": 0,
                     "tried": len(lines), "theme": True,
@@ -419,6 +419,7 @@ class Handler(BaseHTTPRequestHandler):
             elif self.path == "/ai_theme":
                 moves = body.get("moves") or []
                 allow = [m for m in (body.get("allow") or []) if isinstance(m, str) and len(m) >= 4][:10]
+                force = bool(body.get("force"))
                 exclude = [m for m in (body.get("exclude") or []) if isinstance(m, str) and len(m) >= 4][:12]
                 if not allow:
                     self._json({"ok": False, "error": "empty allow list"}, 400)
@@ -436,7 +437,7 @@ class Handler(BaseHTTPRequestHandler):
                                     "candidates": [{"uci": u, "wvl": w} for u, w in top3]})
                         return
                 mt = adapt_mt(int(body.get("level", 3)), moves)
-                self._json({"ok": True, **engine_call(lambda e: e.themed(moves, allow, mt, exclude))})
+                self._json({"ok": True, **engine_call(lambda e: e.themed(moves, allow, mt, exclude, force))})
             elif self.path == "/ai_exclude":
                 moves = body.get("moves") or []
                 exclude = [m for m in (body.get("exclude") or []) if isinstance(m, str) and len(m) >= 4][:64]

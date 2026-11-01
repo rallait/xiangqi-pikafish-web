@@ -553,8 +553,10 @@ const BOOK = {
     black:["h7e7","b7e7","h9g7","b9c7","i9h9","a9b9"] },
   leigong: { name:"雷公炮",
     keyRed:["h2e2"], keyBlack:["h7e7"],
-    red:  ["b2b1","h2e2","b1e1","b0c2","h0g2"],
-    black:["b7b8","h7e7","b8e8","b9c7","h9g7"] },
+    seqRed:["h2e2","b2b1","b1e1"],
+    seqBlack:["h7e7","b7b8","b8e8"],
+    red:  ["h2e2","b2b1","b1e1","b0c2","h0g2"],
+    black:["h7e7","b7b8","b8e8","b9c7","h9g7"] },
   dianpao: { name:"叠炮",
     keyRed:["h2e2"], keyBlack:["h7e7"],
     red:  ["h2e2","b2b4","b4e4","b0c2","h0g2"],
@@ -618,6 +620,17 @@ function themeCandidates() {
   if (!entry) return null;
   const aiSide = other(humanSide);
   const aiMoved = moveList.some(m => m.byAI);
+  // 固定序列：套路有 seqRed/seqBlack 时，AI 前 N 手强制按序列走（飞刀/陷阱必备）
+  const aiMoves = moveList.filter(m => m.byAI).length;
+  const seq = aiSide === RED ? entry.seqRed : entry.seqBlack;
+  if (seq && aiMoves < seq.length) {
+    const uci = seq[aiMoves];
+    const from = idx(FILES.indexOf(uci[0]), +uci[1]);
+    const to = idx(FILES.indexOf(uci[2]), +uci[3]);
+    const p = board[from];
+    if (p && sideOf(p) === aiSide && legalMovesFrom(board, from, aiSide).some(m => m.to === to))
+      return { allow: [uci], name: entry.name, seq: true };
+  }
   // AI 全局第一手锁定招牌着法，保证"像这个开局"，而不是一上来就挑分最高的散手
   let vocab = aiSide === RED ? entry.red : entry.black;
   if (!aiMoved) {
@@ -1627,7 +1640,7 @@ async function aiMove() {
       const r = await fetch("/ai_theme", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ moves, level, allow: th.allow })
+        body: JSON.stringify({ moves, level, allow: th.allow, force: !!th.seq })
       }).then(r => r.json());
       if (r.ok && r.best) { res = r; usedTheme = true; }
       else if (r.ok) setStatus(`「${th.name}」当前着法均不利，AI 自由发挥…`);
