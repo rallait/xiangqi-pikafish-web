@@ -395,6 +395,8 @@
   #impDrop{border:1.5px dashed var(--input-border);border-radius:12px;padding:26px 16px;text-align:center;
     font-size:13px;line-height:1.9;color:var(--tip);cursor:pointer;background:var(--moves-bg,transparent)}
   #impDrop:hover,#impDrop.hot{border-color:var(--accent);color:var(--accent)}
+  #impShotBtn{display:block;margin:6px auto 0;font-size:13px}
+  #impShotBtn[disabled]{opacity:.45;cursor:not-allowed}
   #impWork{display:flex;flex-direction:column;gap:8px;min-height:0}
   #impCanvasWrap{overflow:auto;border:1px solid var(--card-border);border-radius:10px;background:#0d0f14;
     max-height:52vh;display:flex;justify-content:center}
@@ -505,6 +507,7 @@
       <div class="imp-left">
         <div id="impDrop">
           <b>点击选择截图</b>，或直接把图片拖进来，也可以在页面里按 Ctrl+V 粘贴<br>
+          <button id="impShotBtn">直接截取屏幕/窗口</button>
           <span class="imp-tip">手机拍的屏幕照片、软件截图都可以</span>
         </div>
         <div id="impWork" hidden>
@@ -2375,6 +2378,42 @@ const IMP_TPL = [{"set":"a","t":[{"p":"A","c":"b","n":2,"ink":0.236,"h":"0000000
     img.onload = () => { setImage(img); URL.revokeObjectURL(url); };
     img.onerror = () => { info.textContent = "图片读取失败"; URL.revokeObjectURL(url); };
     img.src = url;
+  }
+
+  /* ---------- 直接截取屏幕/窗口（getDisplayMedia） ---------- */
+  const shotBtn = document.getElementById("impShotBtn");
+  async function captureScreen() {
+    let stream;
+    try {
+      stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: false });
+    } catch (e) {
+      return; // 用户在选择器里点了取消，静默返回
+    }
+    try {
+      const video = document.createElement("video");
+      video.muted = true;
+      video.srcObject = stream;
+      await new Promise((res, rej) => { video.onloadedmetadata = res; video.onerror = rej; });
+      await video.play();
+      // 等两帧再抓，避免部分环境下首帧是黑图
+      await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+      const c = document.createElement("canvas");
+      c.width = video.videoWidth; c.height = video.videoHeight;
+      c.getContext("2d").drawImage(video, 0, 0);
+      const img = new Image();
+      img.onload = () => setImage(img);
+      img.src = c.toDataURL("image/png");
+    } catch (e) {
+      info.textContent = "截屏失败：" + (e && e.message ? e.message : e);
+    } finally {
+      stream.getTracks().forEach(t => t.stop());
+    }
+  }
+  if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
+    shotBtn.onclick = e => { e.stopPropagation(); captureScreen(); };
+  } else {
+    shotBtn.disabled = true;
+    shotBtn.title = "当前环境不支持屏幕捕获（需 localhost 或 HTTPS，且浏览器支持）";
   }
 
   /* ---------- 事件 ---------- */

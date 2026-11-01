@@ -365,6 +365,7 @@ STATIC_FILES = {
     "/icon-192.png": ("icon-192.png", "image/png"),
     "/icon-512.png": ("icon-512.png", "image/png"),
     "/index-en.html": ("index-en.html", "text/html; charset=utf-8"),
+    "/favicon.ico": ("icon-192.png", "image/png"),
 }
 
 
