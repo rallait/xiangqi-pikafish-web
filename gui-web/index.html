@@ -1859,6 +1859,8 @@ async function analyzeNow() {
 
 /* ================= 按钮 ================= */
 document.getElementById("newgame").onclick = () => {
+  gameGen++;                                   // 作废在途的 AI 请求
+  if (setupMode) closeSetup(true);             // 摆谱模式直接退出，不恢复旧局面
   importedGame = false;
   baseFen = null;
   humanSide = document.getElementById("side").value === "red" ? RED : BLK;
@@ -1879,7 +1881,7 @@ document.getElementById("newgame").onclick = () => {
 };
 
 document.getElementById("undo").onclick = () => {
-  if (thinking || gameOver || moveList.length === 0) return;
+  if (setupMode || thinking || gameOver || moveList.length === 0) return;
   const plies = turn === humanSide ? 2 : 1;
   for (let k = 0; k < plies && moveList.length; k++) {
     const kk = posKey(board, turn);          // 当前局面就是最后一手走完记录的那个
@@ -2064,6 +2066,11 @@ function closeSetup(keep) {
 }
 function enterSetupMode() {
   setupMode = true;
+  // 作废在途的 AI 请求：思考中途进入摆谱，旧结果不能落到编辑中的棋板上
+  gameGen++;
+  thinking = false;
+  lastAI = null;
+  document.getElementById("newgame").disabled = false;
   selected = -1; legal = []; render();
   setStatus("摆谱模式：点工具栏选棋子 → 点格放置；右键空格=放子；右键棋子=删除；拖动=移动。完成后点「开始对弈」");
 }
@@ -2109,6 +2116,7 @@ setupApply.onclick = () => {
   if (kings.length > 2)   { alert("帅/将最多只能两个（红帅+黑将）。"); return; }
   // 摆谱接管
   importedGame = true;
+  gameGen++;            // 作废在途请求
   // 应用"我执"方
   humanSide = (setupSide.value === "red") ? RED : BLK;
   flipped = (humanSide === BLK);
