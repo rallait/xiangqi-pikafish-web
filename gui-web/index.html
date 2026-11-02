@@ -387,9 +387,10 @@
   .set-box{pointer-events:auto;width:100%;max-height:calc(100vh - 24px);display:flex;flex-direction:column;gap:8px;padding:12px;
     border-radius:14px;background:var(--card-bg);border:1px solid var(--card-border);box-shadow:var(--card-shadow);
     overflow:auto;backdrop-filter:blur(8px)}
-  .set-head{display:flex;align-items:center;gap:8px}
+  .set-head{display:flex;align-items:center;gap:8px;cursor:move;user-select:none}
   .set-head h3{margin:0;font-size:15px;font-weight:600;color:var(--status);letter-spacing:.05em}
   .set-head .grow{flex:1}
+  .set-head .set-x{cursor:pointer}
   .set-x{width:28px;height:28px;padding:0;line-height:1;font-size:16px}
   .set-body{display:flex;flex-direction:column;gap:10px;min-height:0;overflow:auto;padding:6px 4px}
   .set-tip{font-size:12px;line-height:1.7;color:var(--tip);padding:8px 10px;background:var(--moves-bg,transparent);border-radius:8px;border:1px solid var(--input-border)}
@@ -529,6 +530,9 @@
       </div>
     </div>
     <div class="set-foot">
+      <label>我执
+        <select id="setupSide"><option value="red">红方</option><option value="black">黑方</option></select>
+      </label>
       <label>谁先走
         <select id="setupTurn"><option value="red">红方</option><option value="black">黑方</option></select>
       </label>
@@ -1929,6 +1933,7 @@ const setupEmpty = document.getElementById("setupEmpty");
 const setupStd = document.getElementById("setupStd");
 const setupCur = document.getElementById("setupCur");
 const setupTurn = document.getElementById("setupTurn");
+const setupSide = document.getElementById("setupSide");
 const setupFenBtn = document.getElementById("setupFenBtn");
 const setupFen = document.getElementById("setupFen");
 const setPiecesRed = document.getElementById("setPiecesRed");
@@ -1962,19 +1967,79 @@ function pickPiece(side, kind, btn) {
   if (btn) btn.classList.add("cur");
 }
 
+let setupOrig = null;   // 进入摆谱前的局面快照，用于「取消」回滚
+
 function openSetup() {
   setupMask.classList.add("on");
   document.body.dataset.setup = "on";
   setupSel = null;
   document.querySelectorAll(".set-piece.cur").forEach(e => e.classList.remove("cur"));
   setupTurn.value = (turn === BLK) ? "black" : "red";
+  setupSide.value = (humanSide === BLK) ? "black" : "red";
+  setupOrig = {
+    board: board.slice(), turn, humanSide, flipped,
+    moveList: moveList.slice(), importedGame, posHistory: Object.assign({}, posHistory)
+  };
   selected = -1; legal = []; render();
 }
-function closeSetup() {
+
+function restoreSetupOrig() {
+  if (!setupOrig) return;
+  board = setupOrig.board.slice();
+  turn = setupOrig.turn;
+  humanSide = setupOrig.humanSide;
+  flipped = setupOrig.flipped;
+  moveList = setupOrig.moveList.slice();
+  importedGame = setupOrig.importedGame;
+  posHistory = Object.assign({}, setupOrig.posHistory);
+  setupSide.value = (humanSide === BLK) ? "black" : "red";
+  setupTurn.value = (turn === BLK) ? "black" : "red";
+  selected = -1; legal = []; render();
+}
+
+/* 我执方：切换后立即翻转棋盘，便于按自己视角摆 */
+setupSide.onchange = () => {
+  humanSide = (setupSide.value === "red") ? RED : BLK;
+  flipped = (humanSide === BLK);
+  const main = document.getElementById("side");
+  if (main) main.value = setupSide.value;
+  render();
+};
+
+/* 面板拖动：按住标题栏移动 */
+(function makeSetupDraggable() {
+  const head = document.querySelector(".set-head");
+  const box = document.querySelector(".set-box");
+  let dragging = false, ox = 0, oy = 0;
+  head.addEventListener("mousedown", e => {
+    if (e.target.closest("#setupClose")) return;
+    const r = box.getBoundingClientRect();
+    setupMask.style.right = "auto";
+    setupMask.style.bottom = "auto";
+    setupMask.style.left = r.left + "px";
+    setupMask.style.top = r.top + "px";
+    ox = e.clientX - r.left;
+    oy = e.clientY - r.top;
+    dragging = true;
+    e.preventDefault();
+  });
+  document.addEventListener("mousemove", e => {
+    if (!dragging) return;
+    const w = setupMask.offsetWidth, h = setupMask.offsetHeight;
+    let x = e.clientX - ox, y = e.clientY - oy;
+    x = Math.max(0, Math.min(x, innerWidth - w));
+    y = Math.max(0, Math.min(y, innerHeight - h));
+    setupMask.style.left = x + "px";
+    setupMask.style.top = y + "px";
+  });
+  document.addEventListener("mouseup", () => { dragging = false; });
+})();
+function closeSetup(keep) {
   setupMask.classList.remove("on");
   document.body.dataset.setup = "";
   pieceMenu.classList.remove("on");
   pieceMenu.innerHTML = "";
+  if (!keep) restoreSetupOrig();
   if (setupMode) { setupMode = false; render(); }
 }
 function enterSetupMode() {
@@ -1998,7 +2063,7 @@ setupEmpty.onclick = () => {
   render();
 };
 setupStd.onclick = () => { board = parseFEN(START_FEN); moveList = []; selected = -1; legal = []; render(); };
-setupCur.onclick = () => { closeSetup(); };   // 已经在摆谱模式，当前局面就是起点
+setupCur.onclick = () => { restoreSetupOrig(); };   // 撤回本次编辑，回到进入摆谱时的局面
 
 setupFenBtn.onclick = () => {
   const fen = setupFen.value.trim();
@@ -2024,13 +2089,19 @@ setupApply.onclick = () => {
   if (kings.length > 2)   { alert("帅/将最多只能两个（红帅+黑将）。"); return; }
   // 摆谱接管
   importedGame = true;
+  // 应用"我执"方
+  humanSide = (setupSide.value === "red") ? RED : BLK;
+  flipped = (humanSide === BLK);
+  const mainSide = document.getElementById("side");
+  if (mainSide) mainSide.value = setupSide.value;
+  // 应用"谁先走"
   const whoFirst = setupTurn.value === "red" ? RED : BLK;
   turn = whoFirst;
   moveList = []; posHistory = {};
   selected = -1; legal = []; thinking = false; gameOver = false; lastAI = null;
   document.getElementById("capAI").textContent = "—";
   document.getElementById("capHuman").textContent = "—";
-  closeSetup();
+  closeSetup(true);
   render();
   if (whoFirst === humanSide) {
     setStatus("摆谱完成，轮到你走棋");
