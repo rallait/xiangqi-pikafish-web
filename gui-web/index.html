@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8" />
@@ -380,52 +380,47 @@
                repeating-linear-gradient(90deg,rgba(167,139,250,.025) 0 1px,transparent 1px 46px);
     animation:bgflow 16s ease-in-out infinite alternate}
   @keyframes bgflow{from{transform:translate(0,0) scale(1)}to{transform:translate(-2.5%,2%) scale(1.05)}}
-  /* ===== 截图识谱 ===== */
-  #impMask{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;
+  /* ===== 手动摆谱 ===== */
+  #setupMask{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;
     padding:16px;background:rgba(2,4,12,.72);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
-  #impMask.on{display:flex}
-  .imp-box{width:min(1000px,100%);max-height:94vh;display:flex;flex-direction:column;gap:10px;padding:14px;
+  #setupMask.on{display:flex}
+  .set-box{width:min(640px,100%);max-height:94vh;display:flex;flex-direction:column;gap:10px;padding:14px;
     border-radius:14px;background:var(--card-bg);border:1px solid var(--card-border);box-shadow:var(--card-shadow);overflow:hidden}
-  .imp-head{display:flex;align-items:center;gap:8px}
-  .imp-head h3{margin:0;font-size:15px;font-weight:600;color:var(--status);letter-spacing:.05em}
-  .imp-head .grow{flex:1}
-  .imp-x{width:28px;height:28px;padding:0;line-height:1;font-size:16px}
-  .imp-body{display:flex;gap:12px;min-height:0;flex:1}
-  .imp-left{flex:1 1 58%;min-width:0;display:flex;flex-direction:column;gap:8px;min-height:0}
-  #impDrop{border:1.5px dashed var(--input-border);border-radius:12px;padding:26px 16px;text-align:center;
-    font-size:13px;line-height:1.9;color:var(--tip);cursor:pointer;background:var(--moves-bg,transparent)}
-  #impDrop:hover,#impDrop.hot{border-color:var(--accent);color:var(--accent)}
-  #impShotBtn{display:block;margin:6px auto 0;font-size:13px}
-  #impShotBtn[disabled]{opacity:.45;cursor:not-allowed}
-  #impWork{display:flex;flex-direction:column;gap:8px;min-height:0}
-  #impCanvasWrap{overflow:auto;border:1px solid var(--card-border);border-radius:10px;background:#0d0f14;
-    max-height:52vh;display:flex;justify-content:center}
-  #impCanvas{display:block;max-width:100%;height:auto;cursor:crosshair;touch-action:none}
-  .imp-tip{font-size:11.5px;line-height:1.7;color:var(--tip)}
-  .imp-forget{text-decoration:underline;cursor:pointer;margin-left:6px}
-  .imp-right{flex:0 0 296px;display:flex;flex-direction:column;gap:8px;min-width:0}
-  #impGrid{display:grid;grid-template-columns:repeat(9,1fr);gap:3px}
-  .imp-cell{aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;border-radius:6px;
-    font-family:"KaiTi","Microsoft YaHei",serif;font-size:15px;line-height:1;cursor:pointer;user-select:none;
-    background:var(--input-bg);border:1px solid var(--input-border);color:var(--input-color)}
-  .imp-cell.empty{color:var(--tip);opacity:.5;font-size:12px}
-  .imp-cell.red{color:#e0564a;font-weight:700}
-  .imp-cell.blk{color:#9db0c6;font-weight:700}
-  .imp-cell.low{box-shadow:inset 0 0 0 2px #d9a227}
-  .imp-cell:hover{border-color:var(--accent)}
-  #impPick{display:flex;flex-wrap:wrap;gap:4px}
-  #impPick button{padding:1px 5px;min-width:30px;font-size:12px;border-radius:6px;font-family:"KaiTi","Microsoft YaHei",serif}
-  #impPick button.cur{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
-  .imp-foot{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
-  .imp-foot label{display:flex;align-items:center;gap:5px;font-size:12.5px;color:var(--label,var(--small))}
-  .imp-foot select{background:var(--input-bg);color:var(--input-color);border:1px solid var(--input-border);
-    border-radius:6px;padding:2px 6px;font-size:12.5px}
-  .imp-foot .grow{flex:1}
-  @media (max-width:860px){
-    .imp-body{flex-direction:column}
-    .imp-right{flex-basis:auto}
-    #impCanvasWrap{max-height:38vh}
-  }
+  .set-head{display:flex;align-items:center;gap:8px}
+  .set-head h3{margin:0;font-size:15px;font-weight:600;color:var(--status);letter-spacing:.05em}
+  .set-head .grow{flex:1}
+  .set-x{width:28px;height:28px;padding:0;line-height:1;font-size:16px}
+  .set-body{display:flex;flex-direction:column;gap:10px;min-height:0;overflow:auto;padding:6px 4px}
+  .set-tip{font-size:12px;line-height:1.7;color:var(--tip);padding:8px 10px;background:var(--moves-bg,transparent);border-radius:8px;border:1px solid var(--input-border)}
+  .set-tip kbd{display:inline-block;padding:0 5px;margin:0 2px;font-size:11px;background:var(--input-bg);border:1px solid var(--input-border);border-radius:4px;font-family:monospace;color:var(--input-color)}
+  .set-parts{display:flex;gap:14px}
+  .set-col{flex:1;display:flex;flex-direction:column;gap:6px}
+  .set-col h4{margin:0;font-size:12px;color:var(--small,var(--tip));font-weight:500}
+  .set-parts .pieces{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+  .set-piece{width:40px;height:40px;border-radius:50%;cursor:pointer;user-select:none;display:flex;align-items:center;justify-content:center;font-family:"KaiTi","STKaiti","Microsoft YaHei",serif;font-weight:700;font-size:18px;border:2px solid transparent;transition:transform .12s,box-shadow .12s}
+  .set-piece.red{color:#e0564a;background:var(--board-piece-red-bg,#fff8f0);border-color:#c94636}
+  .set-piece.blk{color:#1a2a3a;background:var(--board-piece-blk-bg,#f0f4f8);border-color:#3a4a5a}
+  .set-piece.cur{transform:scale(1.08);box-shadow:0 0 0 2px var(--accent)}
+  .set-piece:hover{transform:scale(1.05)}
+  .set-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .set-fen{display:flex;gap:6px;align-items:center}
+  .set-fen input{flex:1;background:var(--input-bg);color:var(--input-color);border:1px solid var(--input-border);border-radius:6px;padding:4px 8px;font-size:12px;font-family:monospace}
+  .set-fen button{font-size:12px;padding:3px 10px}
+  .set-foot{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+  .set-foot label{display:flex;align-items:center;gap:5px;font-size:12.5px;color:var(--label,var(--small))}
+  .set-foot select{background:var(--input-bg);color:var(--input-color);border:1px solid var(--input-border);border-radius:6px;padding:2px 6px;font-size:12.5px}
+  .set-foot .grow{flex:1}
+  /* 摆谱模式下棋盘提示 */
+  body[data-setup="on"] #board{cursor:crosshair}
+  body[data-setup="on"] .setup-hint{display:block}
+  .setup-hint{display:none;margin-top:4px;font-size:12px;color:var(--accent);text-align:center}
+  /* 右键放棋子浮层 */
+  #pieceMenu{position:fixed;z-index:2000;display:none;background:var(--card-bg);border:1px solid var(--card-border);border-radius:8px;padding:6px;box-shadow:var(--card-shadow);gap:4px;flex-wrap:wrap;max-width:220px}
+  #pieceMenu.on{display:flex}
+  #pieceMenu button{padding:4px 8px;font-size:12px;border-radius:5px;cursor:pointer;border:1px solid var(--input-border);background:var(--input-bg);color:var(--input-color)}
+  #pieceMenu button:hover{border-color:var(--accent);color:var(--accent)}
+  #pieceMenu .sep{width:100%;height:1px;background:var(--input-border);margin:3px 0}
+  #pieceMenu button.danger{color:#e0564a;border-color:#c94636}
 </style>
 </head>
 <body>
@@ -434,6 +429,7 @@
   <div class="boardbox">
     <p class="title"><b>中国象棋</b> · Pikafish 2026-09-06 · 本地离线</p>
     <svg id="board" width="560" height="620" viewBox="0 0 560 620"></svg>
+    <div class="setup-hint">摆谱模式：点棋子工具 → 点格放置；右键空格=放子；右键棋子=删除；拖动=移动。<kbd>E</kbd>清 <kbd>N</kbd>开局 <kbd>S</kbd>开始</div>
     <div class="captured">
       <span class="grp"><span class="lbl">AI 战果</span><span id="capAI"><span class="lbl">—</span></span></span>
       <span class="grp"><span class="lbl">你的战果</span><span id="capHuman"><span class="lbl">—</span></span></span>
@@ -494,49 +490,55 @@
         <button id="analyze">分析局面</button>
       </div>
       <div class="row">
-        <button id="importshot" title="从其它象棋软件的截图识别棋子布局，导入本棋盘">截图识谱</button>
+        <button id="opensetup" title="手动摆谱：点选棋子放到棋盘、右键删除、拖动移动">手动摆谱</button>
       </div>
-<div id="impMask">
-  <div class="imp-box">
-    <div class="imp-head">
-      <h3>截图识谱 · 导入局面</h3>
+<div id="setupMask">
+  <div class="set-box">
+    <div class="set-head">
+      <h3>手动摆谱 · 编辑局面</h3>
       <span class="grow"></span>
-      <button class="imp-x" id="impClose" title="关闭">×</button>
+      <button class="set-x" id="setupClose" title="关闭">×</button>
     </div>
-    <input type="file" id="impFile" accept="image/*" hidden>
-    <div class="imp-body">
-      <div class="imp-left">
-        <div id="impDrop">
-          <b>点击选择截图</b>，或直接把图片拖进来，也可以在页面里按 Ctrl+V 粘贴<br>
-          <button id="impShotBtn">直接截取屏幕/窗口</button>
-          <span class="imp-tip">点按钮后会弹系统选择框：先切到「窗口」或「整个屏幕」页签 → 点一下目标画面的缩略图 → 再点「分享」<br>也可以直接拖入/粘贴：手机拍的屏幕照片、软件截图都可以</span>
-        </div>
-        <div id="impWork" hidden>
-          <div id="impCanvasWrap"><canvas id="impCanvas"></canvas></div>
-          <div class="imp-tip" id="impInfo"></div>
-          <div><button id="impRedo">重新选图</button></div>
-        </div>
-        <div class="imp-tip">点角：依次点棋盘最外圈的四个交点（左上 → 右上 → 右下 → 左下），程序按透视关系铺满整个网格。</div>
+    <div class="set-body">
+      <div class="set-tip">
+        <b>进入摆谱模式后：</b><br>
+        · 在下方点选棋子（红/黑 × 7 种），再点击棋盘格放置<br>
+        · 右键空格子 = 快速放子（弹出菜单） · 右键已有棋子 = 删除<br>
+        · 拖动已有棋子可自由移动到任意格<br>
+        · 快捷键 <kbd>E</kbd> 清空 <kbd>N</kbd> 标准开局 <kbd>S</kbd> 开始对弈 <kbd>Esc</kbd> 退出
       </div>
-      <div class="imp-right">
-        <div id="impGrid"></div>
-        <div id="impPick" hidden></div>
-        <div class="imp-tip">点格子可改正，改正时会自动学习该字体，下次同类截图直接认出；带黄圈的是把握偏低、建议核对。<span id="impForget" class="imp-forget" hidden></span></div>
+      <div class="set-parts">
+        <div class="set-col">
+          <h4>红方</h4>
+          <div class="pieces" id="setPiecesRed"></div>
+        </div>
+        <div class="set-col">
+          <h4>黑方</h4>
+          <div class="pieces" id="setPiecesBlk"></div>
+        </div>
+      </div>
+      <div class="set-actions">
+        <button id="setupEmpty">清空棋盘</button>
+        <button id="setupStd">标准开局</button>
+        <button id="setupCur">从当前局面开始摆</button>
+      </div>
+      <div class="set-fen">
+        <input type="text" id="setupFen" placeholder="或粘贴 FEN 串，如 rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1">
+        <button id="setupFenBtn">导入 FEN</button>
       </div>
     </div>
-    <div class="imp-foot">
-      <label>我执
-        <select id="impSide"><option value="red">红</option><option value="black">黑</option></select>
-      </label>
+    <div class="set-foot">
       <label>谁先走
-        <select id="impTurn"><option value="red">红方</option><option value="black">黑方</option></select>
+        <select id="setupTurn"><option value="red">红方</option><option value="black">黑方</option></select>
       </label>
       <span class="grow"></span>
-      <button class="primary" id="impApply" disabled>导入到棋盘</button>
+      <button id="setupCancel">取消</button>
+      <button class="primary" id="setupApply">开始对弈</button>
     </div>
   </div>
 </div>
-      <div class="row" style="gap:14px">
+<div id="pieceMenu"></div>
+<div class="row" style="gap:14px">
         <label class="sw"><input type="checkbox" id="sound" checked> 落子音效</label>
         <label class="sw" style="gap:6px">动效
           <select id="fx" style="background:var(--input-bg);color:var(--input-color);border:1px solid var(--input-border);border-radius:5px;padding:1px 4px;font-size:12px">
@@ -757,7 +759,7 @@ let legal = [];         // 当前选中棋子的合法目标
 let thinking = false;
 let gameOver = false;
 let gameGen = 0;   // 局面代际：导入截图时自增，使在途的 AI 结果失效
-let importedGame = false;   // 本局是截图导入的：禁用套路与职业开局库，一切按当前形势由引擎分析
+let importedGame = false;   // 本局是手动摆谱导入的：禁用套路与职业开局库，一切按当前形势由引擎分析
 
 function parseFEN(fen) {
   const b = new Array(90).fill(null);
@@ -1908,754 +1910,259 @@ fetch("/health").then(r => r.json()).then(h => {
 if ("serviceWorker" in navigator)
   navigator.serviceWorker.register("/sw.js").catch(() => {});
 
-/* ================= 截图识谱 ================= */
-const IMP_TPL = [{"set":"a","t":[{"p":"A","c":"b","n":2,"ink":0.236,"h":"000000000000000000000000000000000000000000020000000018000000006000000000c00000000180000080020000004006001800200c001800000c003800101800ffc008181fffffc810ffffffcc10ffffff8c11fffc7f0430f8380e0430c03800043000380004300038000430003800041000ffe00c181ffff81c183ffffc18183ffffc180c3ffff8300e3f003030060000006003000000e003c00001c000a00007800078001f00003e007c00001dfff8000003f7c000000000000000000000000000000000"},{"p":"A","c":"r","n":2,"ink":0.256,"h":"0000000000000000000000000000000000320000000300080000081f020000108060800020000c400048000340008000008000c380805001bf81c03801bf01c038033f03e01c033f7fffcc027effff8c023e7fffc4021effff842606ffff84260661c704060601c00427060ffc0407067ffe04070e7fff0c028e3ffc1c02ccfffe18014cfc7f38012400003808900000f000cc0001b000630006400030e0388000082fc1000002000c000000fdf00000000000000000000000000000000000000000000000000000"},{"p":"B","c":"b","n":2,"ink":0.269,"h":"0000000000000000000000000000000000000000000000000000200000000080000000018000000003003c0000060ffff00005ffe3e00009fe0f801019fffffe0019fffffe08100f1e1c0c300e7ff804203ffff804203ff820042031f81004201ffe780420fe7ff80421f3bf800421ff3f800430feffe00c11f3c6700c19ef8e7f08187e0c3ff00c7c381ff00cf0781fb00400f0066002000000c0030000008000c00003000070000e00002c003c00000b81f0000001e18000000000000000000000000000000000"},{"p":"B","c":"r","n":2,"ink":0.285,"h":"000000000000000000000000000000000000000000067f0000000a0030000018000900006000020000400001c001800000e0030187fe50053ff7ffb8043ff3f3980a3fcfff980bffcfff8c13ffc7ff0c13cfe7ff0c127ff7ff04027f07ff04023f87ff0403ffcf070421ed0fff0431cd0fff0c308d0fff1c10890c1f1c10480e061c18083ffe3808383ffe5004180006b0040400012002010006400100407880008000010000600006000018001800000700f00000003e0000000000000000000000000000000000"},{"p":"C","c":"?","n":4,"ink":0.219,"h":"0000000000000000000000000000000000bc000000060020000018000c00006000020000c000018001000200c0020c020040060c060020040cc60010080ccfff10198dffff0819e83ee30c11e87fe20c11c87fe604210818c404201818c40420191fcc04203b9f0c04207b9c180430f198700413e119f00413e018400c1bc038004c1b003fe1c808001fffd8040000ffd00600007fb0030000006003000000c0018000018000400003000020000e00001e0038000003ebe000000000000000000000000000000000"},{"p":"K","c":"b","n":1,"ink":0.198,"h":"000000000000000000000000000000000000000000000000000020000000000000000000800000000300000e00060603fe0004467fce000846ffc610084e7cce00104c05fe0810dc07f00c11fc1f800423ccfc0804230cf8080c200c003ff4201c1ffff421fdffffe420fdf00c0420c8000c0410883f0c0410887e0c0c108c300c0c098c0008080988001810058807f81006000ff02002000040600100000080000000010000000006000000000c0000000070000000030000000000000000000000000000000000"},{"p":"K","c":"r","n":1,"ink":0.196,"h":"0000000000000000000000000000000000000000000000000000000000000040000000000000020001000000800200000040040c000020041f00202008ffe0601010f0efff8810c0cfff08107fcfff0c207fc66304207c046304206004630420ff0c630420ffcc630420ffcc630420c18c630420c198638411ffb8638c11fff0638c19e0006388180000618804000060100400004030020000006001800000c000c000018000600006000018000c00000700600000007f8000000000000000000000000000000000"},{"p":"N","c":"?","n":4,"ink":0.234,"h":"000000000000000000000000000000000000000000000000000000000000000000000001000000000200001000003bfffe00043f0ffe000c1e3ffc10080ffffe08180fff0408180fdff80c100ffffe04000f9f0004201ffffc04201ffffe04201fffffc4201fffff84103fffff84103600c304102118e30c194310660c09e200060809c0000e0805801ffc1004000ffc30020003f8200100000040008000008000400003000030000600000c00180000030060000000000000000000000000000000000000000000"},{"p":"P","c":"b","n":5,"ink":0.22,"h":"000000000000000000000000000000000000000000000000000010000000006000020000800001000100000080020000004004003800200c003c0010081ffffe10187fffff08107fc1e00c100f83e00c300fc3f004301fc7f804203dde380420381818042060fe0004203fffffe431ffffffe431ff3dffcc11f8381f8c11e038070c180038001808003800180c003800100400380030030038006001000000c0008000018000600003000038001c00000e0078000003ffc000000000000000000000000000000000"},{"p":"P","c":"r","n":5,"ink":0.214,"h":"00000000000000000000000000000000007f0000000781e000000c001800002000060000c0000300018000008003000000c0063fffe060043ffffc30081f807c10081c000010180c1c0008100ffffc0c1007fffc0c1006070004000406000400061f0004001ffff00423ffffffe423fc007fc413e0000f84100380000c101f83e00c183f03f808083e01fc180c3000f810040000303002000000600300000060008000018000400003000030000600001c0038000003e3e000000000000000000000000000000000"},{"p":"R","c":"?","n":4,"ink":0.25,"h":"00000000000000000000000000000000000000000004000000002000000000400000000180000080010008004002001ee000047ffffe300c7ffffe1008af7fe010180ffffe08101ffffe08101ffffe08101ffffe04201ffffe04203fbfbe04203a1fde04203ffffe04203e1e060430203fc00c10ffffffc411ffffffe411fe1e1fcc08801c03c808400c00180400080030000008003002000000200108000040000400018000018006000000001c0000000000000000000000000000000000000000000000000000"}]},{"set":"b","t":[{"p":"A","c":"b","n":2,"ink":0.325,"h":"0000000000000000000000000000000000ffc00000070078000058000c0000b01e030001401f008003801f02c003001f006007000f003006000f00180c000f00180c000f1f980c003fffcc0cefffffcc08ffffffc4087fffffc408ffffffc4287fff01c42c7f9f000c2c381f000c2c001ff81c2e01fff81c0607fffc181707fffc381387fffc7009c7fffcf00d67e019e00cb10003d00668001da0033380f34001c87f8e0000e4003d000038ffe200003a001800000f886000000002000000000000000000000000"},{"p":"A","c":"r","n":2,"ink":0.344,"h":"000000000000000000000000000000000001000000000000000000001000000089600000d11e188001a09e350001c17eed0000939ff7000527dffb900f47f7fed80243fdfa480287f5f850050ff5ffc4050feeff240d1ff9ff842e3fbfff802effffffc02eff1fffc02eff1ff0002e3f87f004263783f004360f83fc04130f8ffe0c130fbfff0c130fbfff98090f9fffb00c878fc73004c704007002630000e000100003c0011c0006800087800d000021fff60000007c3800000101800000000000000000000000"},{"p":"B","c":"b","n":2,"ink":0.526,"h":"00000000000000000000000000000000023e80000003efc800000feff200001fdffc00007fff7e8000ffffff0001ffffffc002ffffffd001ffdfbfe005fefff7f007fbffbff00bf7fffff81ffffefdfc1feffffffc3feffffffc3fffffeffc3ffffffffc3fbfeff7fc3ffffffff41efffffffc1fffffffec1fdfff9fec0d1ffff3e807bffffed806ffffff3003ffdfffb003bffbffe001dffc6be001aff803c0005be007800035801e00000cfffc000103c0f0000004ff0000000041000000000000000000000000"},{"p":"B","c":"r","n":2,"ink":0.409,"h":"00000000000000000000000000000000000d800000000060000008078c000000d00e000003fff100002e7ffc00009ef7ff0003bfffff40013fffffe0023ffffff0083ffffbe804fffffef0000fbf9f5c093fff1ff809ffffe7e408ffffffb408fffffff40a7ff7fff42a1ffff7e42a3ffff7e42a7fffffc40a1fffff84023fffff8c05bfffef8c053fc7ff982207c7ff900c83d7ffb01543c10f3000e3c00f600261c000c00030000180000c0007000107000e000000f0e800000000000000000000000000000000"},{"p":"C","c":"b","n":2,"ink":0.461,"h":"0000000000000000000000007e00000007ffe000000ffaf800003ffb7c00007ffbff00029ffbff80053fbfcf80027fbfffc0051feffdf00abffffed80fbffffef81fdfefeee817bfefffc811fb7fffec10ffbfffec11ffdfffec30f7bfff8c30ffbfff8c31ffbffe0c33ff7ffe0c0bfffff91c1b3ff541141a3f700314143ef80fac0e38ffffe80b38f7ffd805f038079004b03ffff002600fffe0015001df40000c0071800041ff83400000000e800020003c00000a03f8000004fff00000000000000000000000"},{"p":"C","c":"r","n":2,"ink":0.366,"h":"0000000000000000000000000000000001ff0000000700c000001000000000c2000080008d2098000116832280020607c4a00406bf87400c1edfefa0082feff9d0186ffffe6810cfdcfeac10dff9ff4c20fff7ff8421fcffffc423ffffff8423dffffb8423bfbfff2423bfbff724223fbfee04023ff7fc04123ff7980c107fe6110819eff6210809c67c039007cc7c0fd0069c7ffff002f81fffe0016007ffe000e003ffc000300003000038000600000e001c000003ffe0000000e0000000000000000000000000"},{"p":"K","c":"b","n":1,"ink":0.352,"h":"0000000000000000000000000000000001018000000c6420000035b860000069779c00009011ce00017635e30002fbbbfd8005fb9bfee0057b97ded009fbaf5de008039ebb4816ebbfffc812f37fef5411774fe84410def7ffc4009f6fffe4203f1ffce411f7fe7b9413f7f7dbe413de45dbe417aeff5bc41ffedf5b8c194fcf5b8c0a0fc0db88050fecf810050ff73810028dfbf82001617df06000a000f0c0000000230000cc0004000060001800001800c0000002000000000000000000000000000000000000"},{"p":"K","c":"r","n":1,"ink":0.269,"h":"0000000000000000000000000000000000020000000000000000000d00000000000c0000002c030000007f808000227fb8400006dfbb00005defbb80000befdbc000979fdcf0010e0fbfa0008cf03fa406affbfbe40668f7fde0007877fda0013ff7bfa0081fe7bfb0001f4f3b98201ff33f80201ffb3fa0021ffbff800218e2ff84021fe8f704011fe0f200011c007008010810700800801070100050007020002000704000000070c000000063000000006e000000007800000000000000000000000000000000"},{"p":"N","c":"b","n":2,"ink":0.484,"h":"0000000000000000000000007f00000007cfb000001b7fb800003bffbe00003fef7f8000f3bfffc001ffffffc005eb7fffd003efffffc00befffffe00fb7bffff80ebfffbff81cf7ff7ff0187ffffff4187ffe03ec1cfffffeec14f7ffff4c14ff7fff4c1dffffef5c1cefffff8c19ffffff1c15f7fe5f140eebffff3c0a513f3f280b22ffffc809bffbfe8804f3e1fd180ee0c0fe300a700c7c30030617f8600381fff8c001c141f180002000e3000050005c0000130070000009ffe00000000000000000000000"},{"p":"N","c":"r","n":2,"ink":0.39,"h":"0000000000000000000000001c000000000100000002000000000cbf00000007ffa800014cfc4f0000be7ffe800173ffdf000437bfff00021773ffb004efd7ffd007fef77fe8019df7ffe000fff7ffec087bb7efcc087f7fffe8087e7ffbe02a1effffe02a1f7fffe02a3f7fe768021f7fff88261f7fe7c8061fffffc8021fbdff94031f0bff94031fffdfa0019fc7ff68008ec87fd004a4007fb0004c003f200220001c400190003c8000497f83000022000c000000003000000300000000000000000000000000"},{"p":"P","c":"b","n":5,"ink":0.199,"h":"00000000000000000000000000000000001e0000000087600000008e180000000f800000001f900000006fc2400003dfc02000007fe8200003ffe0100004eff0100082ffd0080007fbf0080001fff0080003fff00800007cf8080001bfe8000403ffb8000401fff8000803fffb80080fdf40000c18bfc8000c01ffc0040400fe00c402030f000003380f004801000e001000800e001000000e002000000e000000000e004000000e0000000006010000000400000000060000000000000000000000000000000000"},{"p":"P","c":"r","n":5,"ink":0.154,"h":"000000000000000000000000000000000000800000000000000000000000000000200000000e008000000f0000000033800000004f0040040106402000019100100803c100080800f300081001f0e00c1000f7e00410007ff0040000ffe00400006fc00400002ca0000000f3e0000000fff0000000ffff000203ffff80027ffdf780021c02e080024d00e000010b00e000010300f000008300f800008600780000460030000020001000001800080000000000000000000000000018000000000000000000000000"},{"p":"R","c":"b","n":2,"ink":0.489,"h":"0000000000000000000000007e00000007ffe000001a7ff8000027cffe00008affdf00010effdf800033ffbfc000cfffeec0049fbffee0037ffffbf00afffffdd00cffffffc80ffffffffc0bfffefff41fff7fffc41febffefe41fd7ffffe41fdfffffc41bddfcff941fddffffd81fefffffd81fffffbfd81bffff7f301bfffdf02017fbfc38600780fffee0085fffffe00efff98f4005fcb884c0061734b0a0030dff81a00080f1a3800040300c000050301800000c2030000007f5800000000000000000000000"},{"p":"R","c":"r","n":2,"ink":0.403,"h":"00000000000000000000000040000000001780000013ff0000004fffe000001bfffc00017dfb7f0002f6ffbe8005ffffff0012efffff2008dfffff3005ffdfffe005bfdffb98017fdfdf8800fbb7dd8800f7cfffcc00f7dfff8c00fec7f78c003cffee08003c7fffc8303f7ffc8830375ffe0c3a377fff840a3fffff940a3fe7ff9406761fffec053fff87e8033df78058018c078090008c0781a000440586600078010cc00014017380000bc7c6000082001800000480f000001000100000000000000000000000"}]},{"set":"c","t":[{"p":"K","c":"r","n":1,"ink":0.1396,"h":"00000000000000000000000000000000000000000000000000001fc78000003fe23000003fcffc000007dffe000000dfff000301c7ff0003ff87b80003ff36bbc003f076bbc0038076bbc0030036bbe003ffdfbbe007ffbfbbe007ffafbbe007c13fbbf007011dbbf0070f3dbbf007ff7dbbe00ffffbbb600fff7fbb600f801fbb400007ffbb8001cfffbbc003cfff878001cfbfc70000c7bfef0000c79fef0000079fee0000079fe40000039fc00000010f80000000000000000000000000000000000000000000"},{"p":"A","c":"r","n":1,"ink":0.067,"h":"00000000000000000000000000000000000000000000000000000000000000000000000000018000000001800001f003800001f003800007c007800007c00780000e01ffffc00e01ffffc00f1ffffff00f1ffffff0030fc383e0030fc383e00380e380000380e380000381f380000381f380000381e780000381e780000700ffff800700ffff80070fffffe0070fffffe00707f87fc00707f87fc0020000000002000000000000000000000000000000000000000000000000000000000000000000000000000000"},{"p":"B","c":"b","n":1,"ink":0.1071,"h":"000000000000000000000000000000000000000000001c00000000fc00000008f0f000000c67f800003fe7fe0000ffe3800001ffdb000001fe3b8000000cfbffe0000cfbfff0001e7bfff0003f9b807007ffe3b07007f9fbfff007c81ffff00789fffff0060bffc070000bff307000cbff307000cbff007000cbf7fff000c19ffff000c19ffff000019800600000c3e0000000c7e0000000c7e000000047e000000063c000000063c000000003800000000100000000000000000000000000000000000000000000"},{"p":"A","c":"r","n":1,"ink":0.07,"h":"00000000000000000000000000000000000000000000000000000000000000000000000000000000002001c000002001c00001f003c00001f003c000074007e000074007e0000e83ffffc00e83ffffc0039ffffff0039ffffff0038783c0e0038783c0e00380f3c0000380f3c0000380f3e0000380f3e000038007c000038007c0000387ffffc00387ffffc0078ffffff0078ffffff003878007e003878007e000000000000000000000000000000000000000000000000000000000000000000000000000000000"},{"p":"C","c":"r","n":1,"ink":0.1053,"h":"0000000000000000000000000000000000000000000010000000007e00000000b700000001cff8000003cff80000339f800000303e00000030fff0800030fff18000301c218000319821e00171d861e00372dfe17000ef1f867000ef18667003cf186ce007c2181df00f819879f00f0fb873f0070fb807e000879fe00001879ffc6001878fffe00187807fe001878f1fe001879fc3c000c39fc00000c3cfc0000001cfc0000001cf80000000cf800000000700000000000000000000000000000000000000000000"},{"p":"B","c":"b","n":1,"ink":0.0844,"h":"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c00f800003fc7fe00007fe7fe0000ffe3800001ffc3800001fe038000001c33ffe0001e73fff0003f3bfff0003f9b807000ffeb807007ffe3a0f00fd81ffff00f987ffff006187fc07000183fa07000183f207000181f0070001807fff000180ffff000181ffff000181f8ff0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"},{"p":"P","c":"r","n":1,"ink":0.0961,"h":"000000000000000000000000000000000000000000000000000000000000000c0000000018000000003ffffe00003fffff00001ffffe00001e078040001cf760c0001cf723c0003ffff00000ffffffe003fffffff007fe00fff00fe0798ff00f007983e0000f3b0000007f3bf84000fe7bfe6000fc7dff6000f9feff4000e3fe7e400003bf9c4000039fc08000018f808000018780000000078000000007800000000700000000060000000000000000000000000000000000000000000000000000000000000000"},{"p":"P","c":"r","n":1,"ink":0.0839,"h":"00000000000000000000000000000000000000000000000000000000000000018000000007800000000c400000001c000000001c078000001fffff80000fffff00000f03c000000c638000000c778000000c1f800000ffffffe003fffffff007ff80fff00ff079c7f00f8038c1f00600180000000f998000007f3dff0000fe3eff8000fcde7f800071cf3f0000018f9e00000007c000000007c000000007c00000000380000000010000000000000000000000000000000000000000000000000000000000000000"},{"p":"P","c":"r","n":1,"ink":0.0713,"h":"0000000000000000000000000000000000000000000000000000000000000000000000000000000000007800000003f80000001fc00000001f000000001e000000001fffff00000fffff00000fffff00000f81c100000e018000000e018000000e1fc000007fffffc007ffffffe00fff807fe00ff80003f00fc00000f00700000000000f807000003fc0fe00007f80ff00007e007f800078003f000000000f0000000000000000000000000000000000000000000000000000000000000000000000000000000000"},{"p":"R","c":"r","n":1,"ink":0.0933,"h":"0000000000000000000000000000000000000000000000000000001800000003ff8000000fff8000000ffe000000000c000000001ff000007fffff80007e0c018000701ffb80007fffff80007ffc1f8000780c038000ffffff8000ffffff8000f80c030000800c000000000c00000003ffffe003fffffff00ffc0c1fe007e1ccc3e00303cde04000038dc00000018dc00000018dc000000183c000000007800000000780000000078000000003000000000000000000000000000000000000000000000000000000"},{"p":"P","c":"r","n":1,"ink":0.0906,"h":"00000000000000000000000000000000000000000000000000000000000000003c0000000fff8000000f000000001c000000001c000000000c3ff800000fffff80000fc1ff00000e018000000c010000000c038000000fffc00001ffffffe007ffc1ffe00ff8380ff00fe03df3f007003cf0e0000fddf800007fbdff0000ff3fff8000fe3eff8000f85e7f000070df9e000000c3c000000003c000000003c00000000380000000038000000000000000000000000000000000000000000000000000000000000000"},{"p":"P","c":"b","n":1,"ink":0.0852,"h":"000000000000000000000000000000000000000000000000000000000000000000000000003c000000007e000000003f0000003ffffc00007ffffe0000fff9fe00000f8ff800000f8df800001fc1fc00003fc3fe000079ce0f0001e03c000000c03e0000000ffffc2000fffffff007fffffff00ff83d8ff007e03dc3e003003dc00000003dc00000003d800000003d800000003d800000003d000000003c000000001800000000000000000000000000000000000000000000000000000000000000000000000000"},{"p":"C","c":"r","n":1,"ink":0.0632,"h":"000000000000000000000000000000000000000000000000000000000000000000000000000000000000038000000007d000000c07f800000c07f800000c0fc00000081e0000001c3ffc0000180fb84000180c10c000187410c0001877f080003bb7e080007bdfe18000f3cc030001f38c0f0007e10c3e000fc00c3c000f801c000007000c000000000ffe2000000ffff00000007fe00000001fe000000007c000000000000000000000000000000000000000000000000000000000000000000000000000000000"},{"p":"P","c":"b","n":1,"ink":0.0957,"h":"000000000000000000000000000000000000000000000000000000000000000038000000007c000000007e0000003ffffc0000fff1f60000ff1fe000001f3df000001fbbf800003fb3f80000f39e1e0001f039cc0001c039c00001807c0000000ffffc6007fffffff00ffe39fff00ff1391fe007c3b987c00203bbc0000003bbc0000003bb80000003bb80000001bb800000003b000000003b0000000007000000000600000000020000000000000000000000000000000000000000000000000000000000000000"},{"p":"R","c":"r","n":1,"ink":0.0927,"h":"0000000000000000000000000000000000000000000000000000001800000003ff8000000fff8000000ffe000000000c000000003ff800007fffff80007c0c018000703fff80007fffff80007ffc1f8000780c038000ffffff8000ffffff8000f80c030000800c000000000f00000007ffffe003fffffff00ff80c1fe007c1ccc3e00003cde00000038dc00000018dc00000018dc0000000038000000007800000000780000000078000000003000000000000000000000000000000000000000000000000000000"},{"p":"P","c":"b","n":1,"ink":0.0775,"h":"00000000000000000000000000000000000000000000000000000000000000001c000000001e000000003fc000007ffffc0001fffffe0001fff8fe0001ff807c00001f80fc00001fc1fe00003fe3ff000079e7878000f00c030000e00c000000c07f0000000fffff0000ffffffe00ffffffff00fff9e7ff00ff81c07f00fe01c01e000001c000000001c000000001c000000001c000000001c000000001c000000001c00000000080000000000000000000000000000000000000000000000000000000000000000"},{"p":"B","c":"b","n":1,"ink":0.1392,"h":"00000000000000000000000000000000000000000000000000000001800000000f800000107f8000007ffffe0000bfbe0f0000781c0f0001783e1e8003fffe7d8002fff879c00303ffdbc0071ff7dde004fc7dbce003f0fefde00fc3dfcfe00f0c1f9ff0007c3fcff007c38c73f00f0f6dbc60047cedbf8000f9eddfc003f79bdfe007ce7bffc00019f7f38001d80ff80001dfffff0001dfffff00009ffffe00001fbff8000003bfc00000011f000000000000000000000000000000000000000000000000000000"},{"p":"C","c":"b","n":1,"ink":0.0796,"h":"00000000000000000000000000000000000000000000000000000000000000000000000000038000000de7f800000dc7f800000e0fc000001d1e1800001c3ffc00001c3ffc00001c2c18c0001c7c10c000397ff080003bbfe080007bdfe18000fbcf838000f3cd870007e10c3e000fc1ec3c000f81fc00000701fc00000301eff0000001efff200000c07fe00000c01fe0000001e7c0000003e000000003c000000001c0000000000000000000000000000000000000000000000000000000000000000000000000"},{"p":"C","c":"b","n":1,"ink":0.0798,"h":"00000000000000000000000000000000000000000000000000000000000000000000000000038000000de7f800001dcff800001c0f800000181e180000187ffc0000187ffc0000180c10c000186c30c000396ff080003b8fe180007bcfe18000fbcf838000f3cd870007e32c7e000fc1fc7c000f81fc00000701fc00000301eff0000001cfff600000c0ffe00000c01fe00000c3cfc0000003c000000003c000000003c0000000000000000000000000000000000000000000000000000000000000000000000000"},{"p":"A","c":"b","n":1,"ink":0.0704,"h":"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000c000000001e000000001e000000001e00000003fffc00003fffff8003ffffffc007ffffffe00fffff3ff00ff83e07f00fe03e01e007801f000000003f000000003e000000003e000000003e000000003e000000003e000000007fc0000007fffe00007fffff8000ffffffc000fff1ff80007c00060000000000000000000000000000000000000000000000000000000000000000000000000000000000"},{"p":"R","c":"b","n":1,"ink":0.1276,"h":"000000000000000000000000000000000000000000001c00000001ff8000000ffff000001ffff00000001fe000007fffff00007fffff80007f9c038002703e0380077fffff80077c1c07000667dc033002e7ffff3001ffffff3001fe1e073000e73c007000071e006007fffffff007fffffff007fffefff007e01d07f007879de1e0000fddf00001cfddefe001c79defc001c78bc38000c797838000c39f810000019f800000008f000000008f000000000700000000000000000000000000000000000000000000"},{"p":"K","c":"b","n":1,"ink":0.0953,"h":"0000000000000000000000000000000000000000000000000000000f800000087fe000001cfff0000038fe20000038fe320003f907ff0003f80ff80007f9ffc0000f39fe00000431f8e1000030f4e38000300c7fe000300ffff00ff1fffff00ff3fffff00731807180063000018006303f818006337f81800e337e71800e3331f1800e3387e1800e31cf83000c31c8ff0000318fff0000218ffe00000007000000000780000000038000000001000000000000000000000000000000000000000000000000000000"},{"p":"A","c":"b","n":1,"ink":0.0683,"h":"0000000000000000000000000000000000000000000000000000000000000000000000000008000000001c000000003c000000003c000000003c00000000ff0000001fffff0001ffffffc007ffffffe00ffffffff00ffe7c0ff00ff03c03e007803c000000003c000000003c000000003c000000003c000000003c000000007e00000003fffc00000fffff0000ffffff8001ffffff8001ffffff8001fe000f0000f80000000000000000000000000000000000000000000000000000000000000000000000000000"},{"p":"B","c":"b","n":1,"ink":0.1111,"h":"00000000000000000000000000000000000000000001800000000f80e000001e03e000007c3fc000001fffff80001f8f0180001e0f0180003c1fcf80007fffff4000fffe3e6000fc79c0e000c0ffe2f00007fee77001f83f7e7003e007e1f007078fc1f0003f1fe1f001fc7f79f007e1e33e600f8793df80007c77efe000f9cff7e001f1bef3e001c07ee1e000007de0c0000003e000000007c0000000c7c000000043c0000000438000000003800000000100000000000000000000000000000000000000000000"},{"p":"R","c":"b","n":1,"ink":0.0869,"h":"00000000000000000000000000000000000000000000000000000000000000000000000003ff8000001ffff000003ffff000007e0f800000000ff800003fffff00003fef008000380f98c0003fffffe0003fffffe0003e0701e000700700e0007fffffe000ffffffe000ff0783e00070070040000007800000007fff0003fffffff007fffffff00fffffbff0078007002000000700000000070000000007000000000700000000000000000000000000000000000000000000000000000000000000000000000000"}]}];
-(function () {
-  const N = 40;                 // 字形特征尺寸
-  const LOW_CONF = 0.55;        // 置信度低于此值标黄，提示复核
-  const EMPTY_INK = 0.09;       // 前景占比低于此值判空格
-  const MIN_CONF = 0.35;        // 低于此值不认作棋子（多半是棋盘纹饰）
-  const MASK_TH2 = 62 * 62;     // 与底色的 RGB 距离阈值（平方）
+/* ================= 手动摆谱 ================= */
+const PIECE_SYMBOLS = { K: "帅", A: "仕", B: "相", N: "马", R: "车", C: "炮", P: "兵" };
+const PIECE_SYMBOLS_BLK = { K: "将", A: "士", B: "象", N: "馬", R: "車", C: "砲", P: "卒" };
 
-  /* ---------- 模板解包 ---------- */
-  function unpack(h) {
-    const a = new Uint8Array(N * N);
-    for (let i = 0; i < a.length; i++) {
-      const v = parseInt(h[i >> 2], 16);
-      a[i] = (v >> (3 - (i & 3))) & 1;
-    }
-    return a;
-  }
-  let TPLS = null;
-  function tpls() {
-    if (!TPLS) TPLS = IMP_TPL.map(g => g.t.map(x => ({ p: x.p, c: x.c, b: unpack(x.h) })));
-    return TPLS;
-  }
+let setupMode = false;      // 当前是否处于摆谱模式
+let setupSel = null;        // 当前选中要放置的棋子类型 { side: 'red'|'blk', kind: 'K'|'A'|... }
+let setupDrag = null;       // 正在拖动的棋子 { from: idx, el: svgElement }
 
-  /* ---------- 用户模板：纠错即学习，存 localStorage，匹配时优先 ---------- */
-  function pack(bits) {
-    let h = "";
-    for (let i = 0; i < bits.length; i += 4)
-      h += ((bits[i] << 3) | (bits[i + 1] << 2) | (bits[i + 2] << 1) | bits[i + 3]).toString(16);
-    return h;
-  }
-  let USR = null;
-  function usrTpls() {
-    if (!USR) {
-      let arr = [];
-      try { arr = JSON.parse(localStorage.getItem("impUsrTpl2") || "[]"); } catch (e) {}
-      USR = arr.map(x => ({ p: x.p, c: x.c, b: unpack(x.h), h: x.h }));
-    }
-    return USR;
-  }
-  function learnTpl(p, c, bits) {
-    const h = pack(bits);
-    const u = usrTpls();
-    if (u.some(x => x.h === h && x.p === p && x.c === c)) return;
-    u.push({ p, c, b: bits, h });
-    try { localStorage.setItem("impUsrTpl2", JSON.stringify(u.map(x => ({ p: x.p, c: x.c, h: x.h })))); } catch (e) {}
-  }
+/* ---------- 摆谱弹窗 ---------- */
+const setupMask = document.getElementById("setupMask");
+const setupClose = document.getElementById("setupClose");
+const setupCancel = document.getElementById("setupCancel");
+const setupApply = document.getElementById("setupApply");
+const setupEmpty = document.getElementById("setupEmpty");
+const setupStd = document.getElementById("setupStd");
+const setupCur = document.getElementById("setupCur");
+const setupTurn = document.getElementById("setupTurn");
+const setupFenBtn = document.getElementById("setupFenBtn");
+const setupFen = document.getElementById("setupFen");
+const setPiecesRed = document.getElementById("setPiecesRed");
+const setPiecesBlk = document.getElementById("setPiecesBlk");
+const pieceMenu = document.getElementById("pieceMenu");
 
-  /* ---------- 状态 ---------- */
-  let cur = null;
-  let busy = false;
+/* 红方工具栏棋子 */
+const KINDS = ["K", "A", "B", "N", "R", "C", "P"];
+KINDS.forEach(k => {
+  const b = document.createElement("button");
+  b.className = "set-piece red";
+  b.dataset.side = "red";
+  b.dataset.kind = k;
+  b.textContent = PIECE_SYMBOLS[k];
+  b.onclick = () => pickPiece("red", k, b);
+  setPiecesRed.appendChild(b);
+});
+KINDS.forEach(k => {
+  const b = document.createElement("button");
+  b.className = "set-piece blk";
+  b.dataset.side = "blk";
+  b.dataset.kind = k;
+  b.textContent = PIECE_SYMBOLS_BLK[k];
+  b.onclick = () => pickPiece("blk", k, b);
+  setPiecesBlk.appendChild(b);
+});
 
-  const mask   = document.getElementById("impMask");
-  const drop   = document.getElementById("impDrop");
-  const work   = document.getElementById("impWork");
-  const cvs    = document.getElementById("impCanvas");
-  const grid   = document.getElementById("impGrid");
-  const info   = document.getElementById("impInfo");
-  const fileIn = document.getElementById("impFile");
-  const sideSel  = document.getElementById("impSide");
-  const turnSel  = document.getElementById("impTurn");
-  const applyBtn = document.getElementById("impApply");
-  const pickHost = document.getElementById("impPick");
+function pickPiece(side, kind, btn) {
+  setupSel = { side, kind };
+  document.querySelectorAll(".set-piece.cur").forEach(e => e.classList.remove("cur"));
+  if (btn) btn.classList.add("cur");
+}
 
-  /* ---------- 图片装载 ---------- */
-  function setImage(img) {
-    let w = img.naturalWidth, h = img.naturalHeight;
-    let sc = 1;
-    if (Math.max(w, h) > 2000) sc = 2000 / Math.max(w, h);
-    w = Math.max(1, Math.round(w * sc));
-    h = Math.max(1, Math.round(h * sc));
-    cvs.width = w; cvs.height = h;
-    const ctx = cvs.getContext("2d", { willReadFrequently: true });
-    ctx.drawImage(img, 0, 0, w, h);
-    cur = {
-      imgSrc: img, ctx, data: ctx.getImageData(0, 0, w, h).data,
-      w, h, pts: [], cells: null, rotate: false, setIdx: 0
-    };
-    drop.hidden = true; work.hidden = false;
-    grid.innerHTML = ""; pickHost.innerHTML = ""; pickHost.hidden = true;
-    applyBtn.disabled = true;
-    info.textContent = "依次点击棋盘最外圈的四个交点：左上 → 右上 → 右下 → 左下。";
-    drawPreview();
-  }
-
-  /* ---------- 透视映射：四点 → 整体网格 ---------- */
-  function homography(tl, tr, br, bl) {
-    const dx1 = tr[0] - br[0], dx2 = bl[0] - br[0], dx3 = tl[0] - tr[0] + br[0] - bl[0];
-    const dy1 = tr[1] - br[1], dy2 = bl[1] - br[1], dy3 = tl[1] - tr[1] + br[1] - bl[1];
-    const den = dx1 * dy2 - dx2 * dy1;
-    if (Math.abs(den) < 1e-6) return null;
-    const g = (dx3 * dy2 - dx2 * dy3) / den;
-    const k = (dx1 * dy3 - dx3 * dy1) / den;
-    return {
-      a: tr[0] - tl[0] + g * tr[0], b: bl[0] - tl[0] + k * bl[0], c: tl[0],
-      d: tr[1] - tl[1] + g * tr[1], e: bl[1] - tl[1] + k * bl[1], f: tl[1],
-      g, k
-    };
-  }
-  function mapPt(H, u, v) {
-    const w = H.g * u + H.k * v + 1;
-    return [(H.a * u + H.b * v + H.c) / w, (H.d * u + H.e * v + H.f) / w];
-  }
-
-  /* ---------- 预览绘制 ---------- */
-  function drawPreview() {
-    if (!cur) return;
-    const { ctx, w, h, pts, cells, rotate, imgSrc } = cur;
-    ctx.clearRect(0, 0, w, h);
-    ctx.drawImage(imgSrc, 0, 0, w, h);
-    const H = pts.length >= 4 ? homography(pts[0], pts[1], pts[2], pts[3]) : null;
-    if (H) {
-      ctx.save();
-      ctx.lineWidth = Math.max(1, w / 900);
-      ctx.strokeStyle = "rgba(0,240,255,.45)";
-      ctx.beginPath();
-      for (let c = 0; c < 9; c++) {
-        const p0 = mapPt(H, c / 8, 0), p1 = mapPt(H, c / 8, 1);
-        ctx.moveTo(p0[0], p0[1]); ctx.lineTo(p1[0], p1[1]);
-      }
-      for (let r = 0; r < 10; r++) {
-        const p0 = mapPt(H, 0, r / 9), p1 = mapPt(H, 1, r / 9);
-        ctx.moveTo(p0[0], p0[1]); ctx.lineTo(p1[0], p1[1]);
-      }
-      ctx.stroke();
-      ctx.restore();
-    }
-    if (pts.length) {
-      ctx.save();
-      const rr = Math.max(4, w / 120);
-      ctx.font = `bold ${Math.round(rr * 2.2)}px "Microsoft YaHei",sans-serif`;
-      ctx.textAlign = "center"; ctx.textBaseline = "middle";
-      pts.forEach((p, i) => {
-        ctx.fillStyle = "rgba(255,190,40,.95)";
-        ctx.beginPath(); ctx.arc(p[0], p[1], rr, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = "#111";
-        ctx.fillText(String(i + 1), p[0], p[1] + 1);
-      });
-      ctx.restore();
-    }
-    if (cells && H) {
-      ctx.save();
-      let gy = 0;
-      for (let r = 0; r < 9; r++) gy += Math.abs(mapPt(H, 0, (r + 1) / 9)[1] - mapPt(H, 0, r / 9)[1]);
-      gy /= 9;
-      ctx.font = `bold ${Math.round(gy * 0.62)}px "Microsoft YaHei",sans-serif`;
-      ctx.textAlign = "center"; ctx.textBaseline = "middle";
-      for (let r = 0; r < 10; r++) for (let c = 0; c < 9; c++) {
-        const cell = cells[r * 9 + c];
-        if (!cell || cell.empty) continue;
-        const p = mapPt(H, c / 8, (9 - r) / 9);
-        ctx.fillStyle = "rgba(255,255,255,.92)";
-        ctx.beginPath(); ctx.arc(p[0], p[1], gy * 0.36, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = cell.color === "r" ? "#d63b2f" : "#1d1d1d";
-        ctx.fillText(glyphName(cell), p[0], p[1] + gy * 0.03);
-      }
-      ctx.restore();
-      if (rotate) {
-        ctx.save();
-        ctx.fillStyle = "rgba(255,190,40,.95)";
-        ctx.font = `bold ${Math.round(w / 42)}px "Microsoft YaHei",sans-serif`;
-        ctx.fillText("已按 180° 旋转对齐", 8, w / 46);
-        ctx.restore();
-      }
-    }
-  }
-
-  /* ---------- 点角 ---------- */
-  function evPos(e) {
-    const r = cvs.getBoundingClientRect();
-    const sc = cvs.width / r.width;   // 统一用宽比例（CSS max-width:100% 等比缩放时高度同比例）
-    return [
-      (e.clientX - r.left) * sc,
-      (e.clientY - r.top) * sc
-    ];
-  }
-  cvs.addEventListener("click", e => {
-    if (!cur || busy) return;
-    if (cur.pts.length >= 4) { cur.pts = []; cur.cells = null; }
-    const p = evPos(e);
-    cur.pts.push([Math.max(0, Math.min(cur.w, p[0])), Math.max(0, Math.min(cur.h, p[1]))]);
-    if (cur.pts.length === 4) recognize();
-    else {
-      cur.cells = null;
-      drawPreview();
-      info.textContent = `已选 ${cur.pts.length} 个角点，还差 ${4 - cur.pts.length} 个。`;
-    }
-  });
-
-  /* ---------- 单格采样（v13：圆沿判有无 + RGB 取字 + 细弧剔除） ---------- */
-  function medOf(hist, total) {
-    let acc = 0;
-    for (let i = 0; i < 256; i++) { acc += hist[i]; if (acc * 2 >= total) return i; }
-    return 128;
-  }
-
-  const SIDE_K = 1.02;      // 采样窗边长 = step * 1.02
-  const PRES_DISK = 0.50;   // 底色估计圆盘半径
-  const SAMPLE_R = 0.72;    // 采样圆盘半径
-  const RIM_LO = 0.30, RIM_HI = 0.48, RIM_MIN = 0.55;  // 圆沿覆盖率判有无
-  const INNER_R = 0.26;     // 取字圆盘半径（避开刻纹环）
-  const ARC_MIN_R = 0.22, ARC_SPAN = 4, ARC_PIX = 20;  // 细弧（环残段）剔除
-  const MIN_COMP = 10, MARGIN = 4;
-
-  function sampleCell(data, w, h, cx, cy, step, radK) {
-    const side = Math.round(step * SIDE_K);
-    const x0 = Math.round(cx - side / 2), y0 = Math.round(cy - side / 2);
-    const o = side / 2, R2 = (radK * step) * (radK * step);
-    const pts = [];   // [x, y, d, r, g, b]
-    for (let y = 0; y < side; y++) {
-      const py = y0 + y;
-      if (py < 0 || py >= h) continue;
-      const dy = y - o;
-      for (let x = 0; x < side; x++) {
-        const dx = x - o;
-        if (dx * dx + dy * dy > R2) continue;
-        const px = x0 + x;
-        if (px < 0 || px >= w) continue;
-        const i = (py * w + px) << 2;
-        pts.push([x, y, Math.sqrt(dx * dx + dy * dy), data[i], data[i + 1], data[i + 2]]);
-      }
-    }
-    if (pts.length < 200) return null;
-    return { side, o, pts, step };
-  }
-  function faceColor(s) {
-    const hr = new Uint32Array(256), hg = new Uint32Array(256), hb = new Uint32Array(256);
-    let n0 = 0;
-    const lim2 = (PRES_DISK * s.step) * (PRES_DISK * s.step);
-    for (const p of s.pts) {
-      if (p[2] * p[2] > lim2) continue;
-      hr[p[3]]++; hg[p[4]]++; hb[p[5]]++; n0++;
-    }
-    return [medOf(hr, n0), medOf(hg, n0), medOf(hb, n0)];
-  }
-
-  /* 棋子圆心拟合：刻纹环（外沿圆覆盖最大处）粗到细搜索，修正透视/立体感偏移 */
-  function fitCenter(data, w, h, cx, cy, step) {
-    const s = sampleCell(data, w, h, cx, cy, step, 0.60);
-    if (!s) return [0, 0];
-    const fc = faceColor(s), cr = fc[0], cg = fc[1], cb = fc[2];
-    const band = [];
-    for (const p of s.pts) {
-      const dr = p[3] - cr, dg = p[4] - cg, db = p[5] - cb;
-      if (dr * dr + dg * dg + db * db <= MASK_TH2) continue;
-      if (p[2] >= 0.38 * step && p[2] <= 0.58 * step) band.push([p[0] - s.o, p[1] - s.o]);
-    }
-    if (band.length < 150) return [0, 0];
-    const RRS = [0.406, 0.434, 0.462, 0.49, 0.518].map(k => k * step);
-    const TOL = Math.max(1.2, 0.0196 * step);
-    const score = (dxc, dyc) => {
-      let best = 0;
-      for (const rr of RRS) {
-        let c = 0;
-        for (const bp of band) {
-          const dd = Math.sqrt((bp[0] - dxc) * (bp[0] - dxc) + (bp[1] - dyc) * (bp[1] - dyc));
-          if (Math.abs(dd - rr) <= TOL) c++;
-        }
-        const v = c / (2 * Math.PI * rr);
-        if (v > best) best = v;
-      }
-      return best;
-    };
-    let bv = -1, bx = 0, by = 0;
-    for (let dyc = -10; dyc <= 10; dyc += 2) for (let dxc = -10; dxc <= 10; dxc += 2) {
-      const v = score(dxc, dyc);
-      if (v > bv) { bv = v; bx = dxc; by = dyc; }
-    }
-    for (let dyc = by - 2; dyc <= by + 2; dyc++) for (let dxc = bx - 2; dxc <= bx + 2; dxc++) {
-      const v = score(dxc, dyc);
-      if (v > bv) { bv = v; bx = dxc; by = dyc; }
-    }
-    return [bx, by];
-  }
-
-  /* 色调判红黑：字形像素平均 (R-G)，红子远高于面色，黑子接近面色 */
-  function colorOf(data, w, h, cx, cy, step) {
-    const s = sampleCell(data, w, h, cx, cy, step, 0.40);
-    if (!s) return "?";
-    const fc = faceColor(s), cr = fc[0], cg = fc[1], cb = fc[2];
-    let s1 = 0, n = 0;
-    for (const p of s.pts) {
-      const dr = p[3] - cr, dg = p[4] - cg, db = p[5] - cb;
-      if (dr * dr + dg * dg + db * db <= MASK_TH2) continue;
-      if (p[2] > 0.24 * step) continue;
-      s1 += p[3] - p[4]; n++;
-    }
-    return (s1 / Math.max(1, n) > (cr - cg) + 15) ? "r" : "b";
-  }
-
-  function readCell(data, w, h, cx, cy, step) {
-    const s = sampleCell(data, w, h, cx, cy, step, SAMPLE_R);
-    if (!s) return null;
-    const side = s.side, o = s.o;
-    const fc = faceColor(s), cr = fc[0], cg = fc[1], cb = fc[2];
-    const nAll = s.pts.length;
-    const mkAll = new Uint8Array(nAll);
-    for (let k = 0; k < nAll; k++) {
-      const p = s.pts[k];
-      const dr = p[3] - cr, dg = p[4] - cg, db = p[5] - cb;
-      if (dr * dr + dg * dg + db * db > MASK_TH2) mkAll[k] = 1;
-    }
-    // 圆沿覆盖率：真子 0.66+，空格 <=0.47
-    const bw1 = 1.5, nb = Math.floor(side / bw1) + 2;
-    const cov = new Float64Array(nb);
-    for (let k = 0; k < nAll; k++) {
-      if (!mkAll[k]) continue;
-      const j = Math.floor(s.pts[k][2] / bw1);
-      if (j < nb) cov[j]++;
-    }
-    let rim = 0;
-    const j0 = Math.floor(RIM_LO * step / bw1), j1 = Math.min(nb - 1, Math.floor(RIM_HI * step / bw1));
-    for (let j = j0; j <= j1; j++) {
-      const c = cov[j] / (2 * Math.PI * ((j + 0.5) * bw1));
-      if (c > rim) rim = c;
-    }
-    if (rim < RIM_MIN) return { empty: true, rim, ink: 0, bits: null };
-    // 取字：内圆盘（避开刻纹环）
-    const inner = INNER_R * step;
-    const g = new Uint8Array(side * side);
-    for (let k = 0; k < nAll; k++) {
-      const p = s.pts[k];
-      if (p[2] > inner) continue;
-      if (mkAll[k]) g[p[1] * side + p[0]] = 1;
-    }
-    const g2 = new Uint8Array(side * side);
-    for (let y = 1; y < side - 1; y++) {
-      const row = y * side;
-      for (let x = 1; x < side - 1; x++) {
-        if (!g[row + x]) continue;
-        const c = g[row - side + x - 1] + g[row - side + x] + g[row - side + x + 1]
-                + g[row + x - 1] + g[row + x] + g[row + x + 1]
-                + g[row + side + x - 1] + g[row + side + x] + g[row + side + x + 1];
-        if (c >= 5) g2[row + x] = 1;
-      }
-    }
-    // 连通域：剔碎块与细弧
-    const keep = new Uint8Array(side * side);
-    const seen = new Uint8Array(side * side);
-    for (let k0 = 0; k0 < side * side; k0++) {
-      if (!g2[k0] || seen[k0]) continue;
-      const stack = [k0]; seen[k0] = 1;
-      const px = [];
-      while (stack.length) {
-        const j = stack.pop(); px.push(j);
-        const yy = Math.floor(j / side), xx = j % side;
-        for (let dy = -1; dy <= 1; dy++) {
-          const ny = yy + dy;
-          if (ny < 0 || ny >= side) continue;
-          for (let dx = -1; dx <= 1; dx++) {
-            const nx = xx + dx;
-            if (nx < 0 || nx >= side) continue;
-            const nj = ny * side + nx;
-            if (g2[nj] && !seen[nj]) { seen[nj] = 1; stack.push(nj); }
-          }
-        }
-      }
-      if (px.length < MIN_COMP) continue;
-      let rmin = 1e9, rmax = -1;
-      for (const j of px) {
-        const d = Math.sqrt(((j % side) - o) * ((j % side) - o) + (Math.floor(j / side) - o) * (Math.floor(j / side) - o));
-        if (d < rmin) rmin = d;
-        if (d > rmax) rmax = d;
-      }
-      if (rmin >= ARC_MIN_R * step && (rmax - rmin) <= ARC_SPAN && px.length >= ARC_PIX) continue;
-      for (const j of px) keep[j] = 1;
-    }
-    let n2 = 0, bx0 = side, bx1 = -1, by0 = side, by1 = -1;
-    for (let y = 0; y < side; y++) {
-      const row = y * side;
-      for (let x = 0; x < side; x++) {
-        if (!keep[row + x]) continue;
-        n2++;
-        if (x < bx0) bx0 = x;
-        if (x > bx1) bx1 = x;
-        if (y < by0) by0 = y;
-        if (y > by1) by1 = y;
-      }
-    }
-    const ink = n2 / (side * side);
-    if (n2 < 25) return { empty: true, rim, ink, bits: null };
-    const bw2 = bx1 - bx0 + 1, bh2 = by1 - by0 + 1;
-    const sc = Math.min((N - 2 * MARGIN) / bw2, (N - 2 * MARGIN) / bh2);
-    const bits = new Uint8Array(N * N);
-    const offX = (N - bw2 * sc) / 2, offY = (N - bh2 * sc) / 2;
-    for (let y = 0; y < N; y++) {
-      const sy = (y - offY) / sc + by0;
-      if (sy < by0 - 0.5 || sy > by1 + 0.5) continue;
-      const iy = Math.round(sy) * side;
-      for (let x = 0; x < N; x++) {
-        const sx = (x - offX) / sc + bx0;
-        if (sx < bx0 - 0.5 || sx > bx1 + 0.5) continue;
-        bits[y * N + x] = keep[iy + Math.round(sx)];
-      }
-    }
-    return { empty: false, rim, ink, bits };
-  }
-
-  /* ---------- 模板比对 ---------- */
-  function iouShift(a, b, maxShift) {
-    let best = 0;
-    for (let dy = -maxShift; dy <= maxShift; dy++) {
-      for (let dx = -maxShift; dx <= maxShift; dx++) {
-        let inter = 0, uni = 0;
-        for (let y = 0; y < N; y++) {
-          const ay = y * N, yy = y + dy;
-          const inY = yy >= 0 && yy < N;
-          for (let x = 0; x < N; x++) {
-            const av = a[ay + x];
-            const xx = x + dx;
-            const bv = (inY && xx >= 0 && xx < N) ? b[yy * N + xx] : 0;
-            if (av) { uni++; if (bv) inter++; }
-            else if (bv) uni++;
-          }
-        }
-        const v = uni ? inter / uni : 0;
-        if (v > best) best = v;
-      }
-    }
-    return best;
-  }
-  function bestIn(set, bits, maxShift) {
-    let best = null;
-    for (const t of set) {
-      const sc = iouShift(bits, t.b, maxShift);
-      if (!best || sc > best.sc) best = { sc, p: t.p, c: t.c };
-    }
-    return best;
-  }
-
-  /* ---------- 棋子显示名 ---------- */
-  function nameOf(p, color) {
-    const r = color === "r";
-    switch (p) {
-      case "K": return r ? "帥" : "將";
-      case "A": return r ? "仕" : "士";
-      case "B": return r ? "相" : "象";
-      case "N": return "馬";
-      case "R": return "車";
-      case "C": return "炮";
-      case "P": return r ? "兵" : "卒";
-    }
-    return "?";
-  }
-  function glyphName(cell) { return nameOf(cell.p, cell.color); }
-
-  /* ---------- 识别 ---------- */
-  function recognize() {
-    if (!cur || cur.pts.length < 4) return;
-    const H = homography(cur.pts[0], cur.pts[1], cur.pts[2], cur.pts[3]);
-    if (!H) { info.textContent = "四个角点共线了，请按左上→右上→右下→左下的顺序点。"; cur.pts = []; drawPreview(); return; }
-    const { data, w, h } = cur;
-    busy = true;
-    info.textContent = "识别中…";
-    applyBtn.disabled = true;
-    setTimeout(() => {
-      const p00 = mapPt(H, 0, 0), p10 = mapPt(H, 1, 0), p01 = mapPt(H, 0, 1);
-      const step = (Math.hypot(p10[0] - p00[0], p10[1] - p00[1]) / 8
-                  + Math.hypot(p01[0] - p00[0], p01[1] - p00[1]) / 9) / 2;
-      const raw = new Array(90);
-      const hue = new Array(90);
-      for (let r = 0; r < 10; r++) {
-        const v = (9 - r) / 9;          // r=0 是框底那一行
-        for (let c = 0; c < 9; c++) {
-          const p = mapPt(H, c / 8, v);
-          const i = r * 9 + c;
-          // 先按格点粗采样判有无；有棋子则拟合棋子圆心后在修正中心重采样
-          const pre = readCell(data, w, h, p[0], p[1], step);
-          if (pre && !pre.empty) {
-            const off = fitCenter(data, w, h, p[0], p[1], step);
-            const fx = p[0] + off[0], fy = p[1] + off[1];
-            const rc2 = readCell(data, w, h, fx, fy, step);
-            // 边缘格残环拟合可能跑偏：修正后 rim 不升反降则回退到原格点
-            if (rc2 && !rc2.empty && rc2.rim >= pre.rim) {
-              raw[i] = rc2;
-              hue[i] = colorOf(data, w, h, fx, fy, step);
-            } else {
-              raw[i] = pre;
-              hue[i] = colorOf(data, w, h, p[0], p[1], step);
-            }
-          } else raw[i] = pre;
-        }
-      }
-      const sets = tpls();
-      const usr = usrTpls();
-      const acc = sets.map(() => 0);
-      const occ = new Array(90);
-      for (let i = 0; i < 90; i++) {
-        const rc = raw[i];
-        if (!rc || rc.empty || !rc.bits) { occ[i] = false; continue; }
-        occ[i] = true;
-        for (let si = 0; si < sets.length; si++) acc[si] += bestIn(sets[si], rc.bits, 0).sc;
-      }
-      let setIdx = 0;
-      for (let si = 1; si < sets.length; si++) if (acc[si] > acc[setIdx]) setIdx = si;
-      const cells = new Array(90);
-      for (let i = 0; i < 90; i++) {
-        if (!occ[i]) { cells[i] = { empty: true }; continue; }
-        let b = bestIn(sets[setIdx], raw[i].bits, 1);
-        if (usr.length) {
-          const bu = bestIn(usr, raw[i].bits, 1);
-          if (bu.sc > b.sc) b = bu;          // 用户学过的字形/空位优先
-        }
-        if (b.p === "_") { cells[i] = { empty: true }; continue; }   // 学过的空位：直接判空
-        if (b.sc < MIN_CONF) { cells[i] = { empty: true }; continue; }
-        // 颜色以色调实测为准（红黑字形是两种渲染，色调判据稳定）
-        const cc = (hue[i] === "r" || hue[i] === "b") ? hue[i] : b.c;
-        cells[i] = { p: b.p, c: cc, color: "?", conf: b.sc, empty: false, bits: raw[i].bits };
-      }
-      let kingRow = -1;
-      for (let i = 0; i < 90; i++) {
-        const cell = cells[i];
-        if (cell && !cell.empty && cell.p === "K" && (cell.c === "r" || cell.c === "b")) {
-          kingRow = Math.floor(i / 9);
-          break;
-        }
-      }
-      const rotate = kingRow >= 5;
-      for (let i = 0; i < 90; i++) {
-        const cell = cells[i];
-        if (cell.empty) continue;
-        const r = Math.floor(i / 9);
-        // 仕/士 相/象 红黑字形几乎一样，绝不越河，直接按所在半场定色
-        const posC = (rotate ? (r >= 5) : (r < 5)) ? "r" : "b";
-        if (cell.p === "A" || cell.p === "B") cell.color = posC;
-        else if (cell.c === "r" || cell.c === "b") cell.color = cell.c;
-        else cell.color = posC;
-      }
-      cur.cells = cells;
-      cur.raw = raw;               // 留着原始字形：漏认格手工补子时也能学习
-      cur.rotate = rotate;
-      cur.setIdx = setIdx;
-      drawPreview();
-      renderGrid();
-      const n = cells.filter(c => c && !c.empty).length;
-      const low = cells.filter(c => c && !c.empty && c.conf < LOW_CONF).length;
-      info.textContent = `识别到 ${n} 个棋子` + (low ? `（${low} 个把握偏低，已描边）` : "")
-        + (kingRow < 0 ? "；未找到帅/将，按“红方在下”排布，请核对。" : "")
-        + "　点格子可改正。";
-      applyBtn.disabled = false;
-      busy = false;
-    }, 30);
-  }
-
-  /* ---------- 结果网格 ---------- */
-  function renderGrid() {
-    const cells = cur.cells;
-    grid.innerHTML = "";
-    pickHost.hidden = true;
-    for (let r = 9; r >= 0; r--) {
-      for (let c = 0; c < 9; c++) {
-        const i = r * 9 + c;
-        const cell = cells[i];
-        const el = document.createElement("div");
-        el.className = "imp-cell";
-        if (!cell || cell.empty) { el.classList.add("empty"); el.textContent = "·"; }
-        else {
-          el.textContent = glyphName(cell);
-          el.classList.add(cell.color === "r" ? "red" : "blk");
-          if (cell.conf < LOW_CONF) el.classList.add("low");
-        }
-        el.onclick = () => openPick(i, el);
-        grid.appendChild(el);
-      }
-    }
-  }
-
-  const PICKS = [
-    { p: "K", c: "r" }, { p: "A", c: "r" }, { p: "B", c: "r" }, { p: "N", c: "r" },
-    { p: "R", c: "r" }, { p: "C", c: "r" }, { p: "P", c: "r" },
-    { p: "K", c: "b" }, { p: "A", c: "b" }, { p: "B", c: "b" }, { p: "N", c: "b" },
-    { p: "R", c: "b" }, { p: "C", c: "b" }, { p: "P", c: "b" }
-  ];
-  function openPick(i, el) {
-    pickHost.hidden = false;
-    pickHost.innerHTML = "";
-    const cell = cur.cells[i];
-    const add = (label, opt) => {
-      const b = document.createElement("button");
-      b.textContent = label;
-      if (opt) b.style.color = opt.c === "r" ? "#e0564a" : "#9db0c6";   // 红黑着色，区分同字棋子
-      if (opt && !cell.empty && cell.p === opt.p && cell.color === opt.c) b.classList.add("cur");
-      b.onclick = () => {
-        const bits = (cell && cell.bits) || (cur.raw && cur.raw[i] && cur.raw[i].bits);
-        if (bits) {
-          // 选空也学习：记住这片纹饰/阴影，下次自动判空
-          learnTpl(opt ? opt.p : "_", opt ? opt.c : "x", bits);
-          info.textContent = `已学习 ${usrTpls().length} 个字形，同类截图下次自动识别。`;
-          refreshForget();
-        }
-        cur.cells[i] = opt
-          ? { p: opt.p, c: opt.c, color: opt.c, conf: 1, empty: false, bits: cell && cell.bits }
-          : { empty: true };
-        pickHost.hidden = true;
-        drawPreview(); renderGrid();
-      };
-      pickHost.appendChild(b);
-    };
-    add("空", null);
-    PICKS.forEach(o => add(nameOf(o.p, o.c), o));
-  }
-
-  /* ---------- 应用 ---------- */
-  function applyBoard() {
-    if (!cur || !cur.cells) return;
-    gameGen++;                 // 让正在进行的 AI 思考结果作废，避免落到新局面上
-    const rotate = cur.rotate;
-    const nb = new Array(90).fill(null);
-    for (let r = 0; r < 10; r++) for (let c = 0; c < 9; c++) {
-      const cell = cur.cells[r * 9 + c];
-      if (!cell || cell.empty) continue;
-      const br = rotate ? 9 - r : r;
-      const bc = rotate ? 8 - c : c;
-      let ch;
-      switch (cell.p) {
-        case "K": ch = "k"; break;
-        case "A": ch = "a"; break;
-        case "B": ch = "b"; break;
-        case "N": ch = "n"; break;
-        case "R": ch = "r"; break;
-        case "C": ch = "c"; break;
-        case "P": ch = "p"; break;
-        default: continue;
-      }
-      nb[br * 9 + bc] = cell.color === "r" ? ch.toUpperCase() : ch;
-    }
-    board = nb;
-    humanSide = sideSel.value === "red" ? RED : BLK;
-    flipped = humanSide === BLK;
-    turn = turnSel.value === "red" ? RED : BLK;
-    importedGame = true;
-    moveList = []; selected = -1; legal = []; gameOver = false;
-    lastAI = null; pendingAnim = null; thinking = false;
-    posHistory = {};
-    posHistory[posKey(board, turn)] = 1;
-    drawBoardBase();
+function openSetup() {
+  setupMask.classList.add("on");
+  document.body.dataset.setup = "on";
+  setupSel = null;
+  document.querySelectorAll(".set-piece.cur").forEach(e => e.classList.remove("cur"));
+  selected = -1; legal = []; render();
+}
+const _savedThinking = { v: false };
+const _savedGameOver = { v: false };
+function closeSetup() {
+  setupMask.classList.remove("on");
+  document.body.dataset.setup = "";
+  pieceMenu.classList.remove("on");
+  pieceMenu.innerHTML = "";
+  if (setupMode) {
+    setupMode = false;
+    thinking = _savedThinking.v; gameOver = _savedGameOver.v;
     render();
-    setScore("", 0);
-    document.getElementById("pvs").textContent = "尚无分析";
-    document.getElementById("lasthint").textContent = "—";
-    document.getElementById("newgame").disabled = false;
-    closeModal();
-    setStatus(turn === humanSide ? "已导入局面，轮到你走棋" : "已导入局面，AI 先行…");
-    if (turn !== humanSide) aiMove();
   }
+}
+function enterSetupMode() {
+  setupMode = true;
+  _savedThinking.v = thinking; _savedGameOver.v = gameOver;
+  thinking = false; gameOver = true;   // 让原 click 监听器因 gameOver 快速跳过
+  selected = -1; legal = []; render();
+  setStatus("摆谱模式：点工具栏选棋子 → 点格放置；右键空格=放子；右键棋子=删除；拖动=移动。完成后点弹窗内「开始对弈」");
+}
 
-  /* ---------- 模态 ---------- */
-  function refreshForget() {
-    const n = usrTpls().length;
-    const el = document.getElementById("impForget");
-    el.hidden = !n;
-    el.textContent = `清除已学字形(${n})`;
-  }
-  document.getElementById("impForget").onclick = () => {
-    USR = [];
-    try { localStorage.removeItem("impUsrTpl2"); } catch (e) {}
-    refreshForget();
-  };
-  function openModal() {
-    mask.classList.add("on");
-    drop.hidden = false; work.hidden = true;
-    info.textContent = ""; grid.innerHTML = "";
-    pickHost.hidden = true; pickHost.innerHTML = "";
-    cur = null;
-    sideSel.value = document.getElementById("side").value || "red";
-    turnSel.value = "red";
-    refreshForget();
-  }
-  function closeModal() { mask.classList.remove("on"); }
+document.getElementById("opensetup").onclick = () => { openSetup(); enterSetupMode(); };
+setupClose.onclick = () => closeSetup();
+setupCancel.onclick = () => closeSetup();
+setupMask.addEventListener("click", e => { if (e.target === setupMask) closeSetup(); });
 
-  function loadFile(f) {
-    if (!/^image\//.test(f.type)) { info.textContent = "请选择图片文件"; return; }
-    const url = URL.createObjectURL(f);
-    const img = new Image();
-    img.onload = () => { setImage(img); URL.revokeObjectURL(url); };
-    img.onerror = () => { info.textContent = "图片读取失败"; URL.revokeObjectURL(url); };
-    img.src = url;
-  }
+setupEmpty.onclick = () => {
+  if (!confirm("确定清空棋盘？")) return;
+  board = new Array(90).fill(null);
+  moveList = []; posHistory = {}; turn = RED; selected = -1; legal = [];
+  document.getElementById("capAI").textContent = "—";
+  document.getElementById("capHuman").textContent = "—";
+  document.getElementById("lasthint").textContent = "—";
+  render();
+};
+setupStd.onclick = () => { board = parseFEN(START_FEN); moveList = []; selected = -1; legal = []; render(); };
+setupCur.onclick = () => { closeSetup(); };   // 已经在摆谱模式，当前局面就是起点
 
-  /* ---------- 直接截取屏幕/窗口（getDisplayMedia） ---------- */
-  const shotBtn = document.getElementById("impShotBtn");
-  async function captureScreen() {
-    let stream;
-    try {
-      stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: false });
-    } catch (e) {
-      return; // 用户在选择器里点了取消，静默返回
-    }
-    try {
-      const video = document.createElement("video");
-      video.muted = true;
-      video.srcObject = stream;
-      await new Promise((res, rej) => { video.onloadedmetadata = res; video.onerror = rej; });
-      await video.play();
-      // 等两帧再抓，避免部分环境下首帧是黑图
-      await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
-      const c = document.createElement("canvas");
-      c.width = video.videoWidth; c.height = video.videoHeight;
-      c.getContext("2d").drawImage(video, 0, 0);
-      const img = new Image();
-      img.onload = () => setImage(img);
-      img.src = c.toDataURL("image/png");
-    } catch (e) {
-      info.textContent = "截屏失败：" + (e && e.message ? e.message : e);
-    } finally {
-      stream.getTracks().forEach(t => t.stop());
-    }
+setupFenBtn.onclick = () => {
+  const fen = setupFen.value.trim();
+  if (!fen) return;
+  try {
+    const b = parseFEN(fen);
+    board = b; moveList = []; selected = -1; legal = [];
+    // FEN 里的 turn 字段：w=红先（中国象棋 FEN 用 w/b 表示谁走）
+    const parts = fen.split(/\s+/);
+    if (parts[1] === "b") turn = BLK; else turn = RED;
+    setupTurn.value = (turn === RED) ? "red" : "black";
+    render();
+    setStatus("已从 FEN 导入。注意：只导入了棋子布局，若 FEN 有特殊规则字段，本项目不支持。");
+  } catch (e) {
+    setStatus("FEN 解析失败：" + e.message, "em");
   }
-  if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
-    shotBtn.onclick = e => { e.stopPropagation(); captureScreen(); };
+};
+
+setupApply.onclick = () => {
+  // 简单校验：至少有一方有将/帅
+  const kings = board.filter(p => p && (p === "K" || p === "k"));
+  if (kings.length === 0) { alert("棋盘上至少要有一个帅/将，否则 AI 没法走。"); return; }
+  if (kings.length > 2)   { alert("帅/将最多只能两个（红帅+黑将）。"); return; }
+  // 摆谱接管
+  importedGame = true;
+  const whoFirst = setupTurn.value === "red" ? RED : BLK;
+  turn = whoFirst;
+  moveList = []; posHistory = {};
+  selected = -1; legal = []; thinking = false; gameOver = false; lastAI = null;
+  document.getElementById("capAI").textContent = "—";
+  document.getElementById("capHuman").textContent = "—";
+  closeSetup();
+  render();
+  if (whoFirst === humanSide) {
+    setStatus("摆谱完成，轮到你走棋");
   } else {
-    shotBtn.disabled = true;
-    shotBtn.title = "当前环境不支持屏幕捕获（需 localhost 或 HTTPS，且浏览器支持）";
+    setStatus("摆谱完成，AI 先行，思考中…");
+    setTimeout(aiMove, 100);
   }
+};
 
-  /* ---------- 事件 ---------- */
-  document.getElementById("importshot").onclick = openModal;
-  document.getElementById("impClose").onclick = closeModal;
-  mask.addEventListener("click", e => { if (e.target === mask) closeModal(); });
-  document.getElementById("impRedo").onclick = () => {
-    cur = null; work.hidden = true; drop.hidden = false;
-    fileIn.value = ""; grid.innerHTML = "";
-    pickHost.hidden = true;
-  };
-  applyBtn.onclick = applyBoard;
-  drop.onclick = () => fileIn.click();
-  fileIn.onchange = () => { const f = fileIn.files && fileIn.files[0]; if (f) loadFile(f); };
-  drop.addEventListener("dragover", e => { e.preventDefault(); drop.classList.add("hot"); });
-  drop.addEventListener("dragleave", () => drop.classList.remove("hot"));
-  drop.addEventListener("drop", e => {
-    e.preventDefault(); drop.classList.remove("hot");
-    const f = e.dataTransfer.files && e.dataTransfer.files[0];
-    if (f) loadFile(f);
-  });
-  document.addEventListener("paste", e => {
-    if (!mask.classList.contains("on")) return;
-    const items = e.clipboardData && e.clipboardData.items;
-    if (!items) return;
-    for (const it of items) {
-      if (it.type && it.type.indexOf("image") === 0) {
-        const f = it.getAsFile();
-        if (f) { e.preventDefault(); loadFile(f); return; }
-      }
-    }
-  });
+/* ---------- 右键：弹出放子/删除菜单 ---------- */
+function hidePieceMenu() { pieceMenu.classList.remove("on"); pieceMenu.innerHTML = ""; }
+document.addEventListener("click", e => {
+  if (!pieceMenu.contains(e.target) && e.target.id !== "board") hidePieceMenu();
+});
 
-})();
+function showPieceMenu(x, y, cellIdx) {
+  hidePieceMenu();
+  pieceMenu.style.left = x + "px";
+  pieceMenu.style.top  = y + "px";
+  const existing = board[cellIdx];
+  if (existing) {
+    const del = document.createElement("button");
+    del.textContent = "删除此子 (" + (sideOf(existing) === RED ? "红" : "黑") + ")";
+    del.className = "danger";
+    del.onclick = () => { board[cellIdx] = null; render(); hidePieceMenu(); };
+    pieceMenu.appendChild(del);
+  } else {
+    // 红方 7 种
+    const lblR = document.createElement("span"); lblR.textContent = "红方："; pieceMenu.appendChild(lblR);
+    KINDS.forEach(k => {
+      const b = document.createElement("button");
+      b.textContent = PIECE_SYMBOLS[k];
+      b.onclick = () => { board[cellIdx] = k; render(); hidePieceMenu(); };
+      pieceMenu.appendChild(b);
+    });
+    const sep = document.createElement("span"); sep.className = "sep"; pieceMenu.appendChild(sep);
+    const lblB = document.createElement("span"); lblB.textContent = "黑方："; pieceMenu.appendChild(lblB);
+    KINDS.forEach(k => {
+      const b = document.createElement("button");
+      b.textContent = PIECE_SYMBOLS_BLK[k];
+      b.onclick = () => { board[cellIdx] = k.toLowerCase(); render(); hidePieceMenu(); };
+      pieceMenu.appendChild(b);
+    });
+  }
+  pieceMenu.classList.add("on");
+}
 
+/* ---------- 棋盘交互：摆谱模式下的 click / contextmenu / drag ---------- */
+svg.addEventListener("contextmenu", ev => {
+  if (!setupMode) return;
+  ev.preventDefault();
+  const { c, r } = cellFromEvent(ev);
+  if (c < 0) return;
+  showPieceMenu(ev.clientX, ev.clientY, idx(c, r));
+});
+
+// 拖动：mousedown 按下已有棋子 → mousemove 拖 → mouseup 放下
+svg.addEventListener("mousedown", ev => {
+  if (!setupMode || ev.button !== 0) return;
+  const { c, r } = cellFromEvent(ev);
+  if (c < 0) return;
+  const i = idx(c, r);
+  const p = board[i];
+  if (!p) return;
+  setupDrag = { from: i };
+});
+
+document.addEventListener("mouseup", ev => {
+  if (!setupMode || !setupDrag) return;
+  const from = setupDrag.from;
+  setupDrag = null;
+  // 抬起时落在哪个格？
+  const cell = cellFromEvent(ev);
+  if (cell.c < 0) return;   // 拖出棋盘，取消
+  const to = idx(cell.c, cell.r);
+  if (to === from) return;
+  // 直接移动，允许覆盖（摆谱嘛）
+  board[to] = board[from];
+  board[from] = null;
+  render();
+});
+
+/* ---------- 复用工具：从鼠标事件算格子坐标 ---------- */
+function cellFromEvent(ev) {
+  const rect = svg.getBoundingClientRect();
+  const x = ev.clientX - rect.left, y = ev.clientY - rect.top;
+  let c = Math.round((x - M) / CELL), r = Math.round((9 - (y - M) / CELL));
+  if (flipped) { c = 8 - c; r = 9 - r; }
+  if (c < 0 || c > 8 || r < 0 || r > 9) return { c: -1, r: -1 };
+  return { c, r };
+}
+
+/* ---------- 摆谱专用 click 处理（setupMode 且 gameOver=true 时 fire，原 click 因 gameOver 跳过） ---------- */
+svg.addEventListener("click", ev => {
+  if (!setupMode) return;
+  ev.stopPropagation();  // 避免冒泡
+  const { c, r } = cellFromEvent(ev);
+  if (c < 0) return;
+  const i = idx(c, r);
+  if (setupSel) {
+    // 放置模式
+    board[i] = setupSel.kind;
+    if (setupSel.side === "blk") board[i] = setupSel.kind.toLowerCase();
+    render();
+    return;
+  }
+  const existing = board[i];
+  if (existing) {
+    // 没选棋子，点到已有子 → 什么也不做（右键或拖动来操作）
+    return;
+  }
+  // 空格子，没选棋子 → 弹出右键菜单（或直接什么也不做让用户右键）
+});
+
+/* ---------- 快捷键 ---------- */
+document.addEventListener("keydown", e => {
+  // 弹窗打开时监听
+  if (!setupMask.classList.contains("on")) return;
+  const k = e.key.toLowerCase();
+  if (k === "escape") { e.preventDefault(); closeSetup(); return; }
+  if (!setupMode) return;
+  if (k === "e") { setupEmpty.onclick(); return; }
+  if (k === "n") { board = parseFEN(START_FEN); render(); return; }
+  if (k === "s") { setupApply.onclick(); return; }
+});
+
+</script>
 </script>
 </body>
 </html>
