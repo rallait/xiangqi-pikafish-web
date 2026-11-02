@@ -163,14 +163,15 @@ class Engine:
         except queue.Empty:
             pass
 
-    def _go(self, moves, movetime, multipv, searchmoves=None):
+    def _go(self, moves, movetime, multipv, searchmoves=None, fen=None):
         import time
         self.drain()
         if multipv > 1:
             self.send("setoption name MultiPV value %d" % multipv)
             self.send("isready")
             self.read_until(lambda l: l == "readyok", 10)
-        pos = "position startpos"
+        # 有 fen 就用 fen 作基准局面（手动摆谱导入的局面无法用 startpos 重放）
+        pos = ("position fen " + fen) if fen else "position startpos"
         if moves:
             pos += " moves " + " ".join(moves)
         self.send(pos)
@@ -226,20 +227,20 @@ class Engine:
             out["lines"] = [elo_lines[k] for k in sorted(elo_lines)]
         return out
 
-    def play(self, moves, movetime, searchmoves=None, multipv=1):
+    def play(self, moves, movetime, searchmoves=None, multipv=1, fen=None):
         # MultiPV 切换由 _go 内部用 setoption+isready 完成并复位，无需重启引擎
         # （重启每次白白浪费 ~1.1s 启动时间；实测连续 MultiPV 调用管道干净）
         with self.lock:
-            return self._go(moves, movetime, multipv, searchmoves)
+            return self._go(moves, movetime, multipv, searchmoves, fen=fen)
 
-    def analyze(self, moves, movetime):
+    def analyze(self, moves, movetime, fen=None):
         with self.lock:
-            return self._go(moves, movetime, 3)
+            return self._go(moves, movetime, 3, fen=fen)
 
     # 套路内最优着法若已明显亏损（AI 视角低于该值），视为套路不适用，交还引擎自由发挥
     THEME_GIVEUP_CP = -60
 
-    def themed(self, moves, allowed, movetime, exclude=None, force=False):
+    def themed(self, moves, allowed, movetime, exclude=None, force=False, fen=None):
         """一次 MultiPV 搜索，从引擎排序结果里挑第一个属于套路集合的着法。
         只 go 一次，避免连续 go 导致的引擎管道污染；score 是 AI 自己视角。
         若套路内最优也已明显亏损，返回空让前端 fallback 到自由发挥。
@@ -248,7 +249,7 @@ class Engine:
         with self.lock:
             n = min(max(len(allowed) + 2, 6), 12)
             try:
-                r = self._go(moves, movetime, n)
+                r = self._go(moves, movetime, n, fen=fen)
             except RuntimeError:
                 self._restart()
                 return {"best": "", "score": "", "depth": 0, "tried": 0, "theme": True}
@@ -272,7 +273,7 @@ class Engine:
                 targets = [u for u in allowed if u not in excl]
                 if targets:
                     try:
-                        r2 = self._go(moves, movetime, 1, searchmoves=targets)
+                        r2 = self._go(moves, movetime, 1, searchmoves=targets, fen=fen)
                     except RuntimeError:
                         self._restart()
                         return {"best": "", "score": "", "depth": 0,
@@ -287,13 +288,13 @@ class Engine:
                     "tried": len(lines), "theme": True,
                     "candidates": cand_list(lines)}
 
-    def excluding(self, moves, exclude, movetime):
+    def excluding(self, moves, exclude, movetime, fen=None):
         """不做套路限制，仅从全部着法里挑第一个不在 exclude 中的（用于规避长将）。
         MultiPV 覆盖数随排除表动态加大，保证排除表较大时也有非禁着可选。"""
         with self.lock:
             n = min(max(len(exclude) + 4, 12), 24)
             try:
-                r = self._go(moves, movetime, n)
+                r = self._go(moves, movetime, n, fen=fen)
             except RuntimeError:
                 self._restart()
                 return {"best": "", "score": "", "depth": 0, "tried": 0}
@@ -418,6 +419,10 @@ class Handler(BaseHTTPRequestHandler):
         n = int(self.headers.get("Content-Length") or 0)
         body = json.loads(self.rfile.read(n) or b"{}")
         try:
+            # 摆谱导入的局面：前端传基准 FEN，引擎用 position fen 重放，而不是 startpos
+            fen = body.get("fen")
+            if not isinstance(fen, str) or "/" not in fen:
+                fen = None
             if self.path == "/ai":
                 moves = body.get("moves") or []
                 # 截图导入的局面带 nobook：跳过职业开局库，直接引擎分析当前形势
@@ -431,7 +436,7 @@ class Handler(BaseHTTPRequestHandler):
                 mt = adapt_mt(int(body.get("level", 3)), moves)
                 sm = [s for s in (body.get("searchmoves") or [])
                       if isinstance(s, str) and len(s) == 4][:64]
-                res = engine_call(lambda e: e.play(moves, mt, sm or None, 3))
+                res = engine_call(lambda e: e.play(moves, mt, sm or None, 3, fen=fen))
                 lines = res.pop("lines", None) or []
                 res["candidates"] = cand_list(lines)
                 self._json({"ok": True, **res})
@@ -456,16 +461,16 @@ class Handler(BaseHTTPRequestHandler):
                                     "candidates": [{"uci": u, "wvl": w} for u, w in top3]})
                         return
                 mt = adapt_mt(int(body.get("level", 3)), moves)
-                self._json({"ok": True, **engine_call(lambda e: e.themed(moves, allow, mt, exclude, force))})
+                self._json({"ok": True, **engine_call(lambda e: e.themed(moves, allow, mt, exclude, force, fen=fen))})
             elif self.path == "/ai_exclude":
                 moves = body.get("moves") or []
                 exclude = [m for m in (body.get("exclude") or []) if isinstance(m, str) and len(m) >= 4][:64]
                 mt = adapt_mt(int(body.get("level", 3)), moves)
-                self._json({"ok": True, **engine_call(lambda e: e.excluding(moves, exclude, mt))})
+                self._json({"ok": True, **engine_call(lambda e: e.excluding(moves, exclude, mt, fen=fen))})
             elif self.path == "/analyze":
                 moves = body.get("moves") or []
                 mt = int(body.get("movetime", 2500))
-                self._json({"ok": True, **engine_call(lambda e: e.analyze(moves, mt))})
+                self._json({"ok": True, **engine_call(lambda e: e.analyze(moves, mt, fen=fen))})
             else:
                 self._json({"ok": False, "error": "not found"}, 404)
         except Exception as ex:

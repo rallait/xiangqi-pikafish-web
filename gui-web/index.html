@@ -765,6 +765,7 @@ let thinking = false;
 let gameOver = false;
 let gameGen = 0;   // 局面代际：导入截图时自增，使在途的 AI 结果失效
 let importedGame = false;   // 本局是手动摆谱导入的：禁用套路与职业开局库，一切按当前形势由引擎分析
+let baseFen = null;         // 摆谱导入时的基准局面：引擎从它重放 moves，而不是从 startpos
 
 function parseFEN(fen) {
   const b = new Array(90).fill(null);
@@ -778,6 +779,23 @@ function parseFEN(fen) {
   }
   return b;
 }
+/* 棋盘 → FEN（用于把摆谱局面直接交给引擎，而不是用 startpos 重放） */
+function boardToFEN(b, side) {
+  const rows = [];
+  for (let r = 9; r >= 0; r--) {
+    let s = "", empty = 0;
+    for (let c = 0; c < 9; c++) {
+      const p = b[idx(c, r)];
+      if (!p) { empty++; continue; }
+      if (empty) { s += empty; empty = 0; }
+      s += p;
+    }
+    if (empty) s += empty;
+    rows.push(s);
+  }
+  return rows.join("/") + " " + (side === BLK ? "b" : "w") + " - - 0 1";
+}
+
 function resetBoard() {
   board = parseFEN(START_FEN);
   turn = RED;
@@ -1735,14 +1753,14 @@ async function aiMove() {
       const r = await fetch("/ai_exclude", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ moves, level, exclude: checks })
+        body: JSON.stringify({ moves, level, exclude: checks, fen: importedGame ? baseFen : null })
       }).then(r => r.json());
       if (r.ok && r.best && r.best !== "(none)") res = r;
     } else if (th) {
       const r = await fetch("/ai_theme", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ moves, level, allow: th.allow, force: !!th.seq, nobook: importedGame })
+        body: JSON.stringify({ moves, level, allow: th.allow, force: !!th.seq, nobook: importedGame, fen: importedGame ? baseFen : null })
       }).then(r => r.json());
       if (r.ok && r.best) { res = r; usedTheme = true; }
       else if (r.ok) setStatus(`「${th.name}」当前着法均不利，AI 自由发挥…`);
@@ -1751,7 +1769,7 @@ async function aiMove() {
       res = await fetch("/ai", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ moves, level, nobook: importedGame })
+        body: JSON.stringify({ moves, level, nobook: importedGame, fen: importedGame ? baseFen : null })
       }).then(r => r.json());
       if (!res.ok) throw new Error(res.error || "引擎错误");
     }
@@ -1772,7 +1790,7 @@ async function aiMove() {
         const r2 = await fetch("/ai_exclude", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ moves, level, exclude: banned })
+          body: JSON.stringify({ moves, level, exclude: banned, fen: importedGame ? baseFen : null })
         }).then(r => r.json());
         if (!r2.ok || !r2.best || r2.best === "(none)") break;
         const f2 = idx(FILES.indexOf(r2.best[0]), +r2.best[1]);
@@ -1817,7 +1835,7 @@ async function analyzeNow() {
     const res = await fetch("/analyze", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ moves: moveList.map(m => m.uci), movetime: 2500 })
+      body: JSON.stringify({ moves: moveList.map(m => m.uci), movetime: 2500, fen: importedGame ? baseFen : null })
     }).then(r => r.json());
     if (!res.ok) throw new Error(res.error || "分析失败");
     setScore(res.score, res.depth, sign);
@@ -1842,6 +1860,7 @@ async function analyzeNow() {
 /* ================= 按钮 ================= */
 document.getElementById("newgame").onclick = () => {
   importedGame = false;
+  baseFen = null;
   humanSide = document.getElementById("side").value === "red" ? RED : BLK;
   flipped = (humanSide === BLK);   // 执黑 → 黑方在下半盘
   resetBoard();
@@ -1978,7 +1997,7 @@ function openSetup() {
   setupSide.value = (humanSide === BLK) ? "black" : "red";
   setupOrig = {
     board: board.slice(), turn, humanSide, flipped,
-    moveList: moveList.slice(), importedGame, posHistory: Object.assign({}, posHistory)
+    moveList: moveList.slice(), importedGame, baseFen, posHistory: Object.assign({}, posHistory)
   };
   selected = -1; legal = []; render();
 }
@@ -1991,6 +2010,7 @@ function restoreSetupOrig() {
   flipped = setupOrig.flipped;
   moveList = setupOrig.moveList.slice();
   importedGame = setupOrig.importedGame;
+  baseFen = setupOrig.baseFen;
   posHistory = Object.assign({}, setupOrig.posHistory);
   setupSide.value = (humanSide === BLK) ? "black" : "red";
   setupTurn.value = (turn === BLK) ? "black" : "red";
@@ -2097,6 +2117,8 @@ setupApply.onclick = () => {
   // 应用"谁先走"
   const whoFirst = setupTurn.value === "red" ? RED : BLK;
   turn = whoFirst;
+  // 记录基准局面：引擎用 position fen 从这里重放，而不是 startpos
+  baseFen = boardToFEN(board, turn);
   moveList = []; posHistory = {};
   selected = -1; legal = []; thinking = false; gameOver = false; lastAI = null;
   document.getElementById("capAI").textContent = "—";
