@@ -381,11 +381,12 @@
     animation:bgflow 16s ease-in-out infinite alternate}
   @keyframes bgflow{from{transform:translate(0,0) scale(1)}to{transform:translate(-2.5%,2%) scale(1.05)}}
   /* ===== 手动摆谱 ===== */
-  #setupMask{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;
-    padding:16px;background:rgba(2,4,12,.72);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
-  #setupMask.on{display:flex}
-  .set-box{width:min(640px,100%);max-height:94vh;display:flex;flex-direction:column;gap:10px;padding:14px;
-    border-radius:14px;background:var(--card-bg);border:1px solid var(--card-border);box-shadow:var(--card-shadow);overflow:hidden}
+  #setupMask{position:fixed;right:12px;bottom:12px;z-index:1000;display:none;
+    width:min(430px,calc(100vw - 24px));pointer-events:none}
+  #setupMask.on{display:block}
+  .set-box{pointer-events:auto;width:100%;max-height:calc(100vh - 24px);display:flex;flex-direction:column;gap:8px;padding:12px;
+    border-radius:14px;background:var(--card-bg);border:1px solid var(--card-border);box-shadow:var(--card-shadow);
+    overflow:auto;backdrop-filter:blur(8px)}
   .set-head{display:flex;align-items:center;gap:8px}
   .set-head h3{margin:0;font-size:15px;font-weight:600;color:var(--status);letter-spacing:.05em}
   .set-head .grow{flex:1}
@@ -1531,7 +1532,7 @@ function setScore(sc, depth, sign) {
 
 /* ================= 交互 ================= */
 svg.addEventListener("click", ev => {
-  if (!board.length || thinking || gameOver) return;
+  if (setupMode || !board.length || thinking || gameOver) return;
   if (turn !== humanSide) return;
   const rect = svg.getBoundingClientRect();
   const x = ev.clientX - rect.left, y = ev.clientY - rect.top;
@@ -1916,7 +1917,8 @@ const PIECE_SYMBOLS_BLK = { K: "将", A: "士", B: "象", N: "馬", R: "車", C:
 
 let setupMode = false;      // 当前是否处于摆谱模式
 let setupSel = null;        // 当前选中要放置的棋子类型 { side: 'red'|'blk', kind: 'K'|'A'|... }
-let setupDrag = null;       // 正在拖动的棋子 { from: idx, el: svgElement }
+let setupDrag = null;       // 正在拖动的棋子 { from: idx }
+let setupSkipClick = false; // 拖动结束后抑制一次 click
 
 /* ---------- 摆谱弹窗 ---------- */
 const setupMask = document.getElementById("setupMask");
@@ -1965,27 +1967,20 @@ function openSetup() {
   document.body.dataset.setup = "on";
   setupSel = null;
   document.querySelectorAll(".set-piece.cur").forEach(e => e.classList.remove("cur"));
+  setupTurn.value = (turn === BLK) ? "black" : "red";
   selected = -1; legal = []; render();
 }
-const _savedThinking = { v: false };
-const _savedGameOver = { v: false };
 function closeSetup() {
   setupMask.classList.remove("on");
   document.body.dataset.setup = "";
   pieceMenu.classList.remove("on");
   pieceMenu.innerHTML = "";
-  if (setupMode) {
-    setupMode = false;
-    thinking = _savedThinking.v; gameOver = _savedGameOver.v;
-    render();
-  }
+  if (setupMode) { setupMode = false; render(); }
 }
 function enterSetupMode() {
   setupMode = true;
-  _savedThinking.v = thinking; _savedGameOver.v = gameOver;
-  thinking = false; gameOver = true;   // 让原 click 监听器因 gameOver 快速跳过
   selected = -1; legal = []; render();
-  setStatus("摆谱模式：点工具栏选棋子 → 点格放置；右键空格=放子；右键棋子=删除；拖动=移动。完成后点弹窗内「开始对弈」");
+  setStatus("摆谱模式：点工具栏选棋子 → 点格放置；右键空格=放子；右键棋子=删除；拖动=移动。完成后点「开始对弈」");
 }
 
 document.getElementById("opensetup").onclick = () => { openSetup(); enterSetupMode(); };
@@ -2048,13 +2043,11 @@ setupApply.onclick = () => {
 /* ---------- 右键：弹出放子/删除菜单 ---------- */
 function hidePieceMenu() { pieceMenu.classList.remove("on"); pieceMenu.innerHTML = ""; }
 document.addEventListener("click", e => {
-  if (!pieceMenu.contains(e.target) && e.target.id !== "board") hidePieceMenu();
+  if (pieceMenu.classList.contains("on") && !pieceMenu.contains(e.target)) hidePieceMenu();
 });
 
 function showPieceMenu(x, y, cellIdx) {
   hidePieceMenu();
-  pieceMenu.style.left = x + "px";
-  pieceMenu.style.top  = y + "px";
   const existing = board[cellIdx];
   if (existing) {
     const del = document.createElement("button");
@@ -2063,7 +2056,6 @@ function showPieceMenu(x, y, cellIdx) {
     del.onclick = () => { board[cellIdx] = null; render(); hidePieceMenu(); };
     pieceMenu.appendChild(del);
   } else {
-    // 红方 7 种
     const lblR = document.createElement("span"); lblR.textContent = "红方："; pieceMenu.appendChild(lblR);
     KINDS.forEach(k => {
       const b = document.createElement("button");
@@ -2080,7 +2072,16 @@ function showPieceMenu(x, y, cellIdx) {
       pieceMenu.appendChild(b);
     });
   }
+  pieceMenu.style.left = "0px";
+  pieceMenu.style.top = "0px";
   pieceMenu.classList.add("on");
+  // 防超出视口
+  const bw = pieceMenu.offsetWidth, bh = pieceMenu.offsetHeight;
+  let nx = x, ny = y;
+  if (nx + bw > innerWidth - 8) nx = Math.max(8, innerWidth - bw - 8);
+  if (ny + bh > innerHeight - 8) ny = Math.max(8, innerHeight - bh - 8);
+  pieceMenu.style.left = nx + "px";
+  pieceMenu.style.top = ny + "px";
 }
 
 /* ---------- 棋盘交互：摆谱模式下的 click / contextmenu / drag ---------- */
@@ -2115,6 +2116,7 @@ document.addEventListener("mouseup", ev => {
   // 直接移动，允许覆盖（摆谱嘛）
   board[to] = board[from];
   board[from] = null;
+  setupSkipClick = true;   // 拖动结束会补发一次 click，抑制掉
   render();
 });
 
@@ -2128,41 +2130,31 @@ function cellFromEvent(ev) {
   return { c, r };
 }
 
-/* ---------- 摆谱专用 click 处理（setupMode 且 gameOver=true 时 fire，原 click 因 gameOver 跳过） ---------- */
+/* ---------- 摆谱专用 click 处理（原 click 因 setupMode 已跳过） ---------- */
 svg.addEventListener("click", ev => {
   if (!setupMode) return;
-  ev.stopPropagation();  // 避免冒泡
+  if (setupSkipClick) { setupSkipClick = false; return; }
   const { c, r } = cellFromEvent(ev);
   if (c < 0) return;
   const i = idx(c, r);
   if (setupSel) {
-    // 放置模式
-    board[i] = setupSel.kind;
-    if (setupSel.side === "blk") board[i] = setupSel.kind.toLowerCase();
+    board[i] = setupSel.side === "blk" ? setupSel.kind.toLowerCase() : setupSel.kind;
     render();
-    return;
   }
-  const existing = board[i];
-  if (existing) {
-    // 没选棋子，点到已有子 → 什么也不做（右键或拖动来操作）
-    return;
-  }
-  // 空格子，没选棋子 → 弹出右键菜单（或直接什么也不做让用户右键）
 });
 
 /* ---------- 快捷键 ---------- */
 document.addEventListener("keydown", e => {
-  // 弹窗打开时监听
-  if (!setupMask.classList.contains("on")) return;
+  if (!setupMode) return;
+  const tag = (e.target && e.target.tagName || "").toLowerCase();
+  if (tag === "input" || tag === "select" || tag === "textarea") return;
   const k = e.key.toLowerCase();
   if (k === "escape") { e.preventDefault(); closeSetup(); return; }
-  if (!setupMode) return;
-  if (k === "e") { setupEmpty.onclick(); return; }
-  if (k === "n") { board = parseFEN(START_FEN); render(); return; }
-  if (k === "s") { setupApply.onclick(); return; }
+  if (k === "e") { e.preventDefault(); setupEmpty.onclick(); return; }
+  if (k === "n") { e.preventDefault(); setupStd.onclick(); return; }
+  if (k === "s") { e.preventDefault(); setupApply.onclick(); return; }
 });
 
-</script>
 </script>
 </body>
 </html>
