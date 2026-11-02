@@ -1991,6 +1991,7 @@ function pickPiece(side, kind, btn) {
 let setupOrig = null;   // 进入摆谱前的局面快照，用于「取消」回滚
 
 function openSetup() {
+  if (setupMode) return;   // 已在摆谱中，重复打开会覆盖快照，导致「取消」回滚错误
   setupMask.classList.add("on");
   document.body.dataset.setup = "on";
   setupSel = null;
@@ -2075,10 +2076,9 @@ function enterSetupMode() {
   setStatus("摆谱模式：点工具栏选棋子 → 点格放置；右键空格=放子；右键棋子=删除；拖动=移动。完成后点「开始对弈」");
 }
 
-document.getElementById("opensetup").onclick = () => { openSetup(); enterSetupMode(); };
+document.getElementById("opensetup").onclick = () => { if (setupMode) return; openSetup(); enterSetupMode(); };
 setupClose.onclick = () => closeSetup();
 setupCancel.onclick = () => closeSetup();
-setupMask.addEventListener("click", e => { if (e.target === setupMask) closeSetup(); });
 
 setupEmpty.onclick = () => {
   if (!confirm("确定清空棋盘？")) return;
