@@ -1,0 +1,102 @@
+name: Bug 报告
+description: 报告一个可复现的问题
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢反馈。请尽量填全环境信息，很多问题（引擎不走棋、页面空白、AI 卡住）都和环境或启动方式直接相关。
+
+        提交前建议先确认：
+        - 浏览器控制台（F12 → Console）是否有红色报错
+        - 启动服务的窗口是否有异常输出
+        - 换一个主题、换一个难度后是否仍然复现
+
+  - type: dropdown
+    id: run-mode
+    attributes:
+      label: 运行方式
+      options:
+        - Release 压缩包（双击 开始下棋.bat）
+        - 克隆源码运行（python gui-web/server.py）
+        - 其他
+    validations:
+      required: true
+
+  - type: input
+    id: env
+    attributes:
+      label: 系统与版本
+      description: Windows 版本 / Python 版本（如果是从源码运行）
+      placeholder: Windows 11 23H2 / Python 3.12.4
+    validations:
+      required: true
+
+  - type: input
+    id: browser
+    attributes:
+      label: 浏览器
+      placeholder: Edge 131 / Chrome 130 / Firefox 133
+    validations:
+      required: true
+
+  - type: dropdown
+    id: theme
+    attributes:
+      label: 出问题时的主题
+      options:
+        - 赛博霓虹
+        - 经典木纹
+        - 墨玉青金
+        - 水墨宣纸
+        - 青花瓷韵
+        - 暗夜紫罗
+        - 曜石黑金
+        - 樱花粉雪
+        - 与主题无关（所有主题都复现）
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤
+      description: 从打开页面开始，一步步写清楚
+      placeholder: |
+        1. 打开 http://127.0.0.1:8731/
+        2. 难度选「高级」
+        3. 走 炮二平五
+        4. 页面显示「引擎调用失败：Failed to fetch」
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期望行为
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: 实际行为
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: 报错信息 / 截图
+      description: 浏览器控制台（F12 → Console）的报错，或启动服务窗口的输出，可直接粘贴
+      render: shell
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: 自查
+      options:
+        - label: 已确认 8731 端口有服务在监听
+        - label: 已确认 engine/ 目录下的引擎与 NNUE 权重文件存在
+        - label: 换一个主题后问题仍然复现
