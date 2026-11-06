@@ -30,7 +30,7 @@ self.addEventListener("fetch", e => {
     );
     return;
   }
-  if (url.pathname === "/health") return;                 // 健康检查始终走网络
+  if (url.pathname === "/health" || url.pathname === "/progress") return;  // 实时数据始终走网络
   // 其他静态资源 cache-first
   e.respondWith(
     caches.match(e.request).then(hit => hit || fetch(e.request).then(res => {

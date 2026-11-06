@@ -36,10 +36,13 @@ Top-tier engine · 51,101-node professional opening book · clickable candidate 
 
 - **Strong engine**: Pikafish 2026-09-06, 8 threads / 512MB hash, five difficulty levels (default: 2s/move, thinking time scales up as the game deepens)
 - **Professional opening book**: a 51,101-node tree translated from Eleeye's `BOOK.DAT`, weighted by real professional game statistics — zero-latency master-level openings
-- **Clickable candidate moves**: every AI move shows its top-3 candidates (Chinese notation + score + follow-up lines); **click any candidate to make the AI play that move instead**
-- **Plain-language evaluation card**: verdicts like "slight advantage" / "winning" instead of raw centipawns, plus an evaluation bar and Chinese-notation principal variation
-- **Full rule enforcement**: perpetual check / perpetual chase violations, threefold repetition, 60-move draw rule
-- **Polished UI**: 8 switchable themes (cyber neon / classic wood / jade / ink wash / porcelain / nocturne / black gold / sakura, `?theme=xxx` URL param supported), sliding move animation, landing ripple shockwave, capture shatter effects, full-screen check/checkmate banners, pulsing ring on the checked king, move-path arrows, captured-pieces display, move sounds
+- **Clickable candidate moves**: every AI move shows its top-3 candidates (Chinese notation + score + score bar + follow-up lines); **click any candidate to make the AI play that move instead**
+- **Manual position setup**: drop, right-click to add/remove, drag pieces anywhere, keyboard shortcuts (E clear / N start position / S play / Esc exit) and FEN import; usable mid-game, with "I play" and "who moves first" selectors — the engine then plays straight from that position with no book or repertoire
+- **Thinking control**: stop the AI at any time; the status line shows live search depth, node count and elapsed time
+- **Plain-language evaluation card**: verdicts like "slight advantage" / "winning" instead of raw centipawns, plus an evaluation bar, per-candidate score bars and Chinese-notation principal variation
+- **Full rule enforcement**: perpetual check / perpetual chase violations, threefold repetition, 60-move draw rule, facing-kings (flying general) constraint
+- **Polished UI**: 8 switchable themes (cyber neon / classic wood / jade / ink wash / porcelain / nocturne / black gold / sakura, `?theme=xxx` URL param supported), sliding move animation, landing ripple shockwave, capture shatter effects, full-screen check/checkmate banners, pulsing ring on the checked king, move-path arrows, captured-piece icons, move sounds
+- **Move replay**: click any move in the notation to review that position (current move highlighted, captured pieces follow the reviewed ply); click the board / press Esc / hit "back to live" to return
 - **Opening-repertoire mode**: the AI sticks to a chosen repertoire (Central Cannon, Elephant Opening, etc.) while adapting to your replies
 - **PWA installable**: ships with a web app manifest + service worker — install it as a desktop app from the browser; static assets are cached for instant offline startup
 - **English UI**: `gui-web/index-en.html` is a full English interface (piece glyphs and Chinese notation kept); just open `/index-en.html`
@@ -88,9 +91,23 @@ gui-web/         Web UI and server
   book_tree.json Opening book (51,101 nodes, generated from BOOK.DAT)
   build_book.py  BOOK.DAT → book_tree.json converter
 docs/            Screenshots
+tests/           Automated regression tests
+  test_rules.js  Rule tests (FEN round-trip, legal moves, facing kings, notation)
+  test_server.py Server tests (book, difficulty scaling, score parsing + API)
 开始下棋.bat      One-click launcher
 usage.md         Usage guide (Chinese)
 ```
+
+## Tests
+
+No third-party dependencies:
+
+```bash
+node tests/test_rules.js                      # pure rule regression
+python -m unittest discover -s tests -v       # server; API cases skip when the server is down
+```
+
+Rule tests extract the pure functions from `gui-web/index.html` and run them in Node without a DOM. Server tests cover book lookups, difficulty scaling, score parsing, and the `/health`, `/progress`, `/stop` and `/ai` (with `fen`) endpoints.
 
 ## Licenses
 

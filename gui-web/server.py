@@ -94,7 +94,12 @@ class Engine:
     def __init__(self):
         self.proc = None
         self.q = queue.Queue()
-        self.lock = threading.RLock()
+        self.lock = threading.RLock()          # 串行化整套搜索（一次只能有一个 go）
+        self.wlock = threading.Lock()          # 只保护 stdin 写入，stop 不必排队等搜索结束
+        self.stop_evt = threading.Event()      # 用户点了「停止思考」
+        # 实时搜索进度：_go 解析 info 行时更新，前端轮询 /progress 显示深度/节点
+        self.live = {"active": False, "depth": 0, "nodes": 0, "nps": 0,
+                     "score": "", "pv": "", "elapsed": 0, "movetime": 0}
         self.name = ""
         self.nnue = ""
         self.start()
@@ -135,11 +140,58 @@ class Engine:
             self.q.put(line.rstrip("\r\n"))
 
     def send(self, cmd):
-        try:
-            self.proc.stdin.write(cmd + "\n")
-            self.proc.stdin.flush()
-        except (BrokenPipeError, OSError):
-            raise RuntimeError("engine pipe broken")
+        with self.wlock:
+            try:
+                self.proc.stdin.write(cmd + "\n")
+                self.proc.stdin.flush()
+            except (BrokenPipeError, OSError):
+                raise RuntimeError("engine pipe broken")
+
+    def request_stop(self):
+        """中止当前搜索。只写 stdin，不拿搜索锁——否则要等整轮搜索结束才发得出去。"""
+        self.stop_evt.set()
+        with self.wlock:
+            try:
+                self.proc.stdin.write("stop\n")
+                self.proc.stdin.flush()
+            except (BrokenPipeError, OSError, AttributeError):
+                pass
+
+    def _note_live(self, line, t0):
+        """从一行 info 输出里提取深度/节点/评分/主变，供 /progress 轮询显示。"""
+        import time
+        parts = line.split()
+        old = self.live
+        d = old.get("depth", 0)
+        nodes = old.get("nodes", 0)
+        nps = old.get("nps", 0)
+        sc = old.get("score", "")
+        pv = old.get("pv", "")
+        mpv = 1
+        for i, tok in enumerate(parts):
+            if tok == "depth" and i + 1 < len(parts):
+                try: d = max(d, int(parts[i + 1]))
+                except ValueError: pass
+            elif tok == "nodes" and i + 1 < len(parts):
+                try: nodes = max(nodes, int(parts[i + 1]))
+                except ValueError: pass
+            elif tok == "nps" and i + 1 < len(parts):
+                try: nps = int(parts[i + 1])
+                except ValueError: pass
+            elif tok == "multipv" and i + 1 < len(parts):
+                try: mpv = int(parts[i + 1])
+                except ValueError: pass
+            elif tok == "score" and i + 2 < len(parts):
+                sc = parts[i + 1] + " " + parts[i + 2]
+            elif tok == "pv":
+                pv = " ".join(parts[i + 1:])
+                break
+        if mpv != 1:      # 只展示主变（MultiPV 的其他线路不覆盖）
+            return
+        self.live = {"active": True, "depth": d, "nodes": nodes, "nps": nps,
+                     "score": sc, "pv": pv,
+                     "elapsed": round(time.time() - t0, 1),
+                     "movetime": old.get("movetime", 0)}
 
     def read_until(self, pred, timeout):
         lines = []
@@ -166,6 +218,7 @@ class Engine:
     def _go(self, moves, movetime, multipv, searchmoves=None, fen=None):
         import time
         self.drain()
+        self.stop_evt.clear()
         if multipv > 1:
             self.send("setoption name MultiPV value %d" % multipv)
             self.send("isready")
@@ -177,11 +230,36 @@ class Engine:
         self.send(pos)
         self.send("isready")
         self.read_until(lambda l: l == "readyok", 10)
+        # 用户可能在 isready 阶段就点了停止：直接返回空结果，不发 go
+        if self.stop_evt.is_set():
+            out = {"best": "", "score": "", "depth": 0, "pv": "", "aborted": True,
+                   "engine": self.name, "nnue": self.nnue}
+            if multipv > 1:
+                out["lines"] = []
+            self.live = {**self.live, "active": False}
+            return out
         go = "go movetime %d" % movetime
         if searchmoves:
             go += " searchmoves " + " ".join(searchmoves)
         self.send(go)
-        lines = self.read_until(lambda l: l.startswith("bestmove"), movetime / 1000.0 + 20)
+        # 边读边更新实时进度，供前端 /progress 轮询显示深度/节点数
+        t0 = time.time()
+        self.live = {"active": True, "depth": 0, "nodes": 0, "nps": 0,
+                     "score": "", "pv": "", "elapsed": 0, "movetime": movetime}
+        lines = []
+        deadline = t0 + movetime / 1000.0 + 20
+        while time.time() < deadline:
+            try:
+                line = self.q.get(timeout=max(0.01, deadline - time.time()))
+            except queue.Empty:
+                break
+            lines.append(line)
+            if line.startswith("info"):
+                self._note_live(line, t0)
+            if line.startswith("bestmove"):
+                break
+        self.live = {**self.live, "active": False,
+                     "elapsed": round(time.time() - t0, 1)}
         # 彻底等待 bestmove 被消费，并清空残留输出
         time.sleep(0.05)
         self.drain()
@@ -393,6 +471,10 @@ class Handler(BaseHTTPRequestHandler):
             self.send_header("Cache-Control", "no-store")   # 页面不缓存，改动刷新即生效
             self.end_headers()
             self.wfile.write(data)
+        elif self.path.split("?")[0] == "/progress":
+            # 只读取内存里的实时进度，不碰引擎，不会和正在进行的搜索抢锁
+            e = ENGINE
+            self._json({"ok": True, **(e.live if e else {})})
         elif self.path == "/health":
             e = get_engine()
             self._json({"ok": True, "engine": e.name, "nnue": e.nnue,
@@ -423,7 +505,13 @@ class Handler(BaseHTTPRequestHandler):
             fen = body.get("fen")
             if not isinstance(fen, str) or "/" not in fen:
                 fen = None
-            if self.path == "/ai":
+            if self.path == "/stop":
+                # 不等搜索锁：直接往引擎写 stop，让当前 go 提前吐出 bestmove
+                e = ENGINE
+                if e is not None:
+                    e.request_stop()
+                self._json({"ok": True})
+            elif self.path == "/ai":
                 moves = body.get("moves") or []
                 # 截图导入的局面带 nobook：跳过职业开局库，直接引擎分析当前形势
                 node = None if body.get("nobook") else book_probe(moves)
