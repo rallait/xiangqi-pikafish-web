@@ -77,6 +77,142 @@ def score_to_int(sc):
     return 30000 if n > 0 else -30000
 
 
+# ============ 摆谱局面校验（镜像皮卡鱼 position 检查） ============
+# 皮卡鱼遇到非法局面（仕出九宫/相过河/兵站错线/将帅照面/数量超限）会打印
+# CRITICAL ERROR 并直接退出进程——一旦退出，后续所有引擎调用全部失败。
+# 前端提交前会拦一次，这里是服务端兜底（防手工调 API 或前端漏判）。
+_ADV_R = {(3, 0), (5, 0), (4, 1), (3, 2), (5, 2)}
+_ADV_B = {(3, 9), (5, 9), (4, 8), (3, 7), (5, 7)}
+_ELE_R = {(2, 0), (6, 0), (0, 2), (4, 2), (8, 2), (2, 4), (6, 4)}
+_ELE_B = {(2, 9), (6, 9), (0, 7), (4, 7), (8, 7), (2, 5), (6, 5)}
+_LIMITS = {"R": 2, "N": 2, "C": 2, "A": 2, "B": 2, "P": 5}
+_CN = {"R": "车", "N": "马", "C": "炮", "A": "仕", "B": "相", "P": "兵",
+       "r": "车", "n": "马", "c": "炮", "a": "士", "b": "象", "p": "卒",
+       "K": "帅", "k": "将"}
+
+
+def validate_setup_fen(fen):
+    """返回 None=合法；否则返回中文错误描述。"""
+    parts = (fen or "").split()
+    rows = parts[0].split("/") if parts else []
+    if len(rows) != 10:
+        return "FEN 必须有 10 行"
+    board = {}
+    for ri, row in enumerate(rows):
+        r, c = 9 - ri, 0
+        for ch in row:
+            if ch.isdigit():
+                c += int(ch)
+            elif ch in "kabnrcpKABNRCP":
+                if c > 8:
+                    return "第 %d 行超过 9 列" % (ri + 1)
+                board[(c, r)] = ch
+                c += 1
+            else:
+                return "含非法字符 %r" % ch
+        if c != 9:
+            return "第 %d 行不是 9 列" % (ri + 1)
+    cnt = {}
+    for p in board.values():
+        cnt[p] = cnt.get(p, 0) + 1
+    if cnt.get("K", 0) != 1 or cnt.get("k", 0) != 1:
+        return "红黑双方必须恰好各有一个将/帅"
+    for t, lim in _LIMITS.items():
+        if cnt.get(t, 0) > lim:
+            return "红方%s最多 %d 个" % (_CN[t], lim)
+        lt = t.lower()
+        if cnt.get(lt, 0) > lim:
+            return "黑方%s最多 %d 个" % (_CN[lt], lim)
+    for (c, r), p in board.items():
+        red = p.isupper()
+        t = p.upper()
+        if t == "K":
+            if not (3 <= c <= 5) or (red and r > 2) or (not red and r < 7):
+                return ("红帅" if red else "黑将") + "只能放在九宫内"
+        elif t == "A":
+            if (c, r) not in (_ADV_R if red else _ADV_B):
+                return ("红仕" if red else "黑士") + "只能放在九宫的 5 个斜线点"
+        elif t == "B":
+            if (c, r) not in (_ELE_R if red else _ELE_B):
+                return ("红相" if red else "黑象") + "不能过河，只能放在己侧 7 个象位"
+        elif t == "P":
+            if red and r < 3:
+                return "红兵不能放在己方第 1～3 横线"
+            if not red and r > 6:
+                return "黑卒不能放在己方第 1～3 横线"
+    # 先走方已经能吃对方的将/帅（含将帅照面）：皮卡鱼判 "King can be captured" 后退出
+    red_to_move = len(parts) < 2 or parts[1] != "b"
+    enemy_king = "k" if red_to_move else "K"
+    kp = next((sq for sq, p in board.items() if p == enemy_king), None)
+    if kp is not None and _attacked(board, kp, red_to_move):
+        return "先走方已经能吃对方的将/帅（含将帅照面）"
+    return None
+
+
+def _attacked(board, target, by_red):
+    """target 格是否被 by_red 方攻击（车/炮/马/兵/将 直攻 + 将帅照面）。"""
+    tc, tr = target
+    for (c, r), p in board.items():
+        if p.isupper() != by_red:
+            continue
+        t = p.upper()
+        if t == "K":
+            if abs(c - tc) + abs(r - tr) == 1:
+                return True
+            if c == tc:  # 白脸将：同列中间无子
+                lo, hi = sorted((r, tr))
+                if not any((c, y) in board for y in range(lo + 1, hi)):
+                    return True
+        elif t == "R":
+            if c == tc or r == tr:
+                if _clear_path(board, c, r, tc, tr):
+                    return True
+        elif t == "C":
+            if c == tc or r == tr:
+                if _cannon_path(board, c, r, tc, tr):
+                    return True
+        elif t == "N":
+            dc, dr = abs(c - tc), abs(r - tr)
+            if (dc, dr) in ((1, 2), (2, 1)):
+                leg = (c, r + (1 if tr > r else -1)) if dc == 1 else (c + (1 if tc > c else -1), r)
+                if leg not in board:
+                    return True
+        elif t == "P":
+            fwd = tr - r == (1 if by_red else -1) and c == tc
+            crossed = r >= 5 if by_red else r <= 4
+            side = crossed and r == tr and abs(c - tc) == 1
+            if fwd or side:
+                return True
+    return False
+
+
+def _clear_path(board, c, r, tc, tr):
+    dc = (tc > c) - (tc < c)
+    dr = (tr > r) - (tr < r)
+    x, y = c + dc, r + dr
+    while (x, y) != (tc, tr):
+        if (x, y) in board:
+            return False
+        x += dc
+        y += dr
+    return True
+
+
+def _cannon_path(board, c, r, tc, tr):
+    dc = (tc > c) - (tc < c)
+    dr = (tr > r) - (tr < r)
+    x, y = c + dc, r + dr
+    screens = 0
+    while (x, y) != (tc, tr):
+        if (x, y) in board:
+            screens += 1
+            if screens > 1:
+                return False
+        x += dc
+        y += dr
+    return screens == 1
+
+
 def cand_list(lines, k=3):
     """从 MultiPV 结果提取前 k 个候选：首着 uci + 评分 + 完整 PV（行棋方视角）。"""
     out = []
@@ -199,9 +335,12 @@ class Engine:
         deadline = time.time() + timeout
         while time.time() < deadline:
             try:
-                line = self.q.get(timeout=max(0.01, deadline - time.time()))
+                line = self.q.get(timeout=min(0.25, max(0.01, deadline - time.time())))
             except queue.Empty:
-                break
+                # 引擎进程已死就别等满 timeout，后续 send 会抛错并触发重启
+                if self.proc.poll() is not None:
+                    break
+                continue
             lines.append(line)
             if pred(line):
                 break
@@ -250,14 +389,21 @@ class Engine:
         deadline = t0 + movetime / 1000.0 + 20
         while time.time() < deadline:
             try:
-                line = self.q.get(timeout=max(0.01, deadline - time.time()))
+                # 轮询间隔压到 0.25s：引擎若中途崩溃（非法局面会让皮卡鱼直接退出），
+                # 快速发现并报错重启，而不是干等到 deadline 才返回空结果
+                line = self.q.get(timeout=min(0.25, max(0.01, deadline - time.time())))
             except queue.Empty:
-                break
+                if self.proc.poll() is not None:
+                    raise RuntimeError("engine process died during search")
+                continue
             lines.append(line)
             if line.startswith("info"):
                 self._note_live(line, t0)
             if line.startswith("bestmove"):
                 break
+        else:
+            if self.proc.poll() is not None:
+                raise RuntimeError("engine process died during search")
         self.live = {**self.live, "active": False,
                      "elapsed": round(time.time() - t0, 1)}
         # 彻底等待 bestmove 被消费，并清空残留输出
@@ -505,6 +651,13 @@ class Handler(BaseHTTPRequestHandler):
             fen = body.get("fen")
             if not isinstance(fen, str) or "/" not in fen:
                 fen = None
+            if fen and self.path != "/stop":
+                # 皮卡鱼收到非法局面会打印 CRITICAL ERROR 并直接退出进程，
+                # 之后所有引擎调用全部失败——必须在发给引擎前拦死
+                bad = validate_setup_fen(fen)
+                if bad:
+                    self._json({"ok": False, "error": "摆谱局面不合法：" + bad}, 400)
+                    return
             if self.path == "/stop":
                 # 不等搜索锁：直接往引擎写 stop，让当前 go 提前吐出 bestmove
                 e = ENGINE
