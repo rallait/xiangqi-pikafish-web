@@ -2387,7 +2387,7 @@ fetch("/health").then(r => r.json()).then(h => {
 }).catch(() => {});
 // PWA：注册 service worker（localhost 属 secure context，可离线缓存静态资源）
 if ("serviceWorker" in navigator)
-  navigator.serviceWorker.register("/sw.js").catch(() => {});
+  navigator.serviceWorker.register("/sw.js?v=3").catch(() => {});
 
 /* ================= 手动摆谱 ================= */
 const PIECE_SYMBOLS = { K: "帅", A: "仕", B: "相", N: "马", R: "车", C: "炮", P: "兵" };

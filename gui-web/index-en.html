@@ -1655,7 +1655,7 @@ fetch("/health").then(r => r.json()).then(h => {
 }).catch(() => {});
 // PWA：注册 service worker（localhost 属 secure context，可离线缓存静态资源）
 if ("serviceWorker" in navigator)
-  navigator.serviceWorker.register("/sw.js").catch(() => {});
+  navigator.serviceWorker.register("/sw.js?v=3").catch(() => {});
 </script>
 </body>
 </html>
