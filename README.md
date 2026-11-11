@@ -100,8 +100,6 @@ tests/           自动化回归测试
   test_server.py 服务端测试（开局库/难度/评分换算 + 接口联测）
 开始下棋.bat     一键启动
 usage.md         使用说明
-install-log.md   安装与来源校验记录（URL / SHA256）
-offline-test.md  离线验证记录
 ```
 
 ## 测试

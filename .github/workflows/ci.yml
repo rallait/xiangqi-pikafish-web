@@ -1,0 +1,31 @@
+# 回归测试：规则（Node）+ 服务端纯函数（Python）
+# Windows 上全量可跑；Linux/macOS 只跑纯函数与规则，引擎接口用例自动跳过
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: 规则回归测试
+        run: node tests/test_rules.js
+
+      - name: 服务端回归测试
+        run: python -m unittest discover -s tests -v

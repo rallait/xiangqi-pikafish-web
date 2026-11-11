@@ -7,12 +7,19 @@ import json
 import os
 import queue
 import subprocess
+import sys
 import threading
 import webbrowser
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 ENGINE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "engine")
-ENGINE_EXE = os.path.join(ENGINE_DIR, "Pikafish-Windows-x86-64-universal.exe")
+if sys.platform.startswith("win"):
+    _ENGINE_BIN = "Pikafish-Windows-x86-64-universal.exe"
+elif sys.platform == "darwin":
+    _ENGINE_BIN = "Pikafish-MacOS-universal"
+else:
+    _ENGINE_BIN = "Pikafish-Linux-x86-64-universal"
+ENGINE_EXE = os.path.join(ENGINE_DIR, _ENGINE_BIN)
 NNUE_FILE = os.path.join(ENGINE_DIR, "pikafish.nnue")
 
 HOST = "127.0.0.1"
@@ -251,7 +258,7 @@ class Engine:
             encoding="utf-8",
             errors="replace",
             bufsize=1,
-            creationflags=0x08000000,  # CREATE_NO_WINDOW
+            creationflags=0x08000000 if os.name == "nt" else 0,  # CREATE_NO_WINDOW（仅 Windows）
         )
         threading.Thread(target=self._reader, daemon=True).start()
         import time
