@@ -6,7 +6,8 @@ const fs = require("fs");
 const path = require("path");
 
 const HTML = path.join(__dirname, "..", "gui-web", "index.html");
-const html = fs.readFileSync(HTML, "utf8");
+/* Windows 下 git 可能以 CRLF 签出（autocrlf），统一成 LF 再按源码标记抽取 */
+const html = fs.readFileSync(HTML, "utf8").replace(/\r\n/g, "\n");
 
 function block(startMarker, endMarker) {
   const a = html.indexOf(startMarker);
