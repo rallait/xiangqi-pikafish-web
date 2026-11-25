@@ -867,7 +867,7 @@ const THEMES = {
     sel:"#e0a93c", hintDot:"rgba(122,83,38,.6)", hintOcc:"rgba(200,60,40,.12)", hintOccStroke:"#c0392b",
     lastFill:"rgba(216,178,90,.14)", lastStroke:"#b8903f",
     ai:"#d9791f", human:"#c08b4e",
-    aiBadge:"rgba(60,38,14,.92)", humanBadge:"rgba(50,28,15,.95)", badgeGlow:false
+    aiBadge:"rgba(46,26,12,.95)", humanBadge:"rgba(50,28,15,.95)", badgeGlow:false
   },
   jade: {
     wood:[[0,"#0e2b22"],[0.45,"#0b241c"],[0.8,"#081c16"],[1,"#06140f"]],
@@ -1656,7 +1656,7 @@ fetch("/health").then(r => r.json()).then(h => {
 }).catch(() => {});
 // PWA：注册 service worker（localhost 属 secure context，可离线缓存静态资源）
 if ("serviceWorker" in navigator)
-  navigator.serviceWorker.register("/sw.js?v=4").catch(() => {});
+  navigator.serviceWorker.register("/sw.js?v=5").catch(() => {});
 </script>
 </body>
 </html>

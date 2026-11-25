@@ -248,6 +248,13 @@ class Engine:
         self.start()
 
     def start(self):
+        if os.name != "nt":
+            # 仓库里的引擎二进制是 100644（Windows 上 git 默认不带执行位），
+            # macOS / Linux clone 后 Popen 会 PermissionError，启动前补上 +x。
+            try:
+                os.chmod(ENGINE_EXE, 0o755)
+            except OSError:
+                pass
         self.proc = subprocess.Popen(
             [ENGINE_EXE],
             cwd=ENGINE_DIR,

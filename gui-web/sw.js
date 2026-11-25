@@ -1,6 +1,6 @@
-/* 中国象棋 PWA Service Worker v4
+/* 中国象棋 PWA Service Worker v5
    静态资源 cache-first，HTML 永远 network-first（拿到最新前端代码），API network-only */
-const CACHE = "xq-v4";
+const CACHE = "xq-v5";
 const ASSETS = ["/manifest.json", "/sw.js", "/icon-192.png", "/icon-512.png"];
 
 self.addEventListener("install", e => {
